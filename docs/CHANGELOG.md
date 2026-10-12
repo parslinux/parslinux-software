@@ -4,6 +4,23 @@ Pars Linux Yazılım Merkezi projesindeki tüm önemli değişiklikler, yenilikl
 
 Format, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardını temel alır ve [Semantik Sürümleme](https://semver.org/spec/v2.0.0.html) ilkelerine uyar.
 
+## [2.3.0] - 2026-10-12 (Çoklu Sıralama, Bildirim Eylemleri ve Wayland/Touchpad Jestleri)
+
+### 🚀 Yeni Özellikler
+- **Çoklu Kriter Sıralama Seçicisi (`MainWindow.py` & `SearchMixin.py`):**
+  - Kategori ve arama sonuçlarında anlık sıralama imkanı veren modern açılır menü (`ui_sort_combobox`).
+  - Dört farklı sıralama modu: "Ada Göre (A-Z)", "En Çok İndirilenler", "Popülerliğe Göre" ve "Son Eklenenler".
+  - Türkçe yerel ayar duyarlı (`locale.strxfrm`) harf sıralaması ve 0ms GTK FlowBox anlık güncellemeleri.
+- **Masaüstü Bildirim Eylemleri (`MainWindow.notify`):**
+  - Bir uygulama kurulduğunda veya güncellendiğinde sistem masaüstü bildiriminde çıkan interaktif "Uygulamayı Başlat" (Launch) butonu.
+  - Tıklandığında Flatpak uygulamasını arka planda bağımsız bir süreç olarak anında açma desteği (`FlatpakManager.launch`).
+- **Wayland & Touchpad Dokunmatik Jestleri (`SliderMixin.py`):**
+  - Vitrin slider alanı için `Gtk.GestureSwipe` ile dokunmatik ekran ve touchpad sağa/sola kaydırma (swipe) algılama.
+  - Touchpad iki parmak yatay kaydırma (`scroll-event`) dinleyicisi ile vitrin afişleri arasında pürüzsüz geçiş.
+  - Kullanıcı jesti esnasında otomatik geçiş sayacını akıllıca duraklatma (`pause_auto_slider`).
+
+---
+
 ## [2.2.0] - 2026-10-12 (Çevrimdışı Mod, ODRS Yorum Gönderme ve Flatpak Depo Yönetimi)
 
 ### 🚀 Yeni Özellikler

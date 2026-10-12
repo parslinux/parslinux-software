@@ -2,7 +2,7 @@ import os
 import gi
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, GLib, Pango
+from gi.repository import Gtk, GLib, Pango, Gdk
 
 
 class SliderMixin:
@@ -97,10 +97,44 @@ class SliderMixin:
         btn_next.connect("clicked", self.on_ui_slider_right_button_clicked)
         GLib.idle_add(self.ui_slider_overlay.add_overlay, btn_next)
 
+        # Faz 10: Dokunmatik Ekran ve Touchpad Jestleri
+        if not getattr(self, "_slider_gestures_initialized", False):
+            try:
+                self._slider_swipe_gesture = Gtk.GestureSwipe.new(self.ui_slider_overlay)
+                self._slider_swipe_gesture.set_propagation_phase(Gtk.PropagationPhase.BUBBLE)
+                self._slider_swipe_gesture.connect("swipe", self._on_slider_swipe)
+                self.ui_slider_overlay.add_events(Gdk.EventMask.SCROLL_MASK | Gdk.EventMask.TOUCH_MASK)
+                self.ui_slider_overlay.connect("scroll-event", self._on_slider_scroll)
+                self._slider_gestures_initialized = True
+            except Exception as e:
+                if hasattr(self, "Logger"):
+                    self.Logger.warning(f"Slider gestures init exception: {e}")
+
         GLib.idle_add(self.ui_slider_overlay.show_all)
 
         if self.UserSettings.config_animations:
             self.start_slider_timer()
+
+    def _on_slider_swipe(self, gesture, velocity_x, velocity_y):
+        """Touch screen / Touchpad swipe gesture recognizer for Slider."""
+        if abs(velocity_x) > 80 and abs(velocity_x) > abs(velocity_y):
+            self.pause_auto_slider()
+            if velocity_x < 0:
+                self._slide_next_page()
+            else:
+                self._slide_prev_page()
+
+    def _on_slider_scroll(self, widget, event):
+        """Touchpad horizontal scroll recognizer for Slider."""
+        if event.direction == Gdk.ScrollDirection.RIGHT or (hasattr(event, 'delta_x') and event.delta_x > 0.4):
+            self.pause_auto_slider()
+            self._slide_next_page()
+            return True
+        elif event.direction == Gdk.ScrollDirection.LEFT or (hasattr(event, 'delta_x') and event.delta_x < -0.4):
+            self.pause_auto_slider()
+            self._slide_prev_page()
+            return True
+        return False
 
     def on_slider_app_activated(self, flow_box, child):
         self.set_app_details_page(child.name)

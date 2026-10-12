@@ -14,6 +14,9 @@ Pars Linux Yazılım Merkezi, modern Flatpak ekosistemini temel alarak evrensel 
 - **Canlı ODRS Yorumları & Puan Gönderme:** Open Desktop Rating Service (`odrs.gnome.org`) üzerinden topluluk incelemeleri ve doğrudan detay sayfasından yıldızlı puan/yorum gönderebilme.
 - **Flatpak Depo (Remote) Yönetimi:** Ayarlar ekranından sistem ve kullanıcı depolarını listeleme, Flathub Beta, GNOME Nightly veya özel adresle yeni depo ekleme ve yönetme.
 - **Gelişmiş Çevrimdışı Mod (Offline Mode):** İnternet olmadığında önbellek ile kesintisiz açılış, yerel arama fallback'i, bilgi çubuğu bildirimi ve yüklü uygulamalara tam erişim.
+- **Çoklu Kriter Sıralama:** Kategori ve arama ekranlarında Ada Göre (A-Z), En Çok İndirilenler, Popülerlik ve Son Eklenenlere göre 0ms GTK sıralaması.
+- **Masaüstü Bildirim Eylemleri:** İndirme veya güncelleme tamamlandığında bildirimden tek tıkla uygulamayı başlatma butonu.
+- **Wayland & Touchpad Jestleri:** Vitrin afişlerinde dokunmatik parmakla kaydırma (`Gtk.GestureSwipe`) ve touchpad iki parmak yatay kaydırma desteği.
 - **Sistem ve Flatpak Güncellemeleri:** Bekleyen güncellemeleri anlık tespit edip tek tıkla topluca güncelleyen "Tümünü Güncelle" paneli.
 - **Mimarî Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU desteği ile donanım uyumluluk rozetleri.
 - **Modüler Denetleyici Mimarisi (`src/controllers/`):** Bakımı kolaylaştıran 6 bağımsız mixin yapısı (Slider, Galeri, Arama & Kategori, Detay, Kuyruk ve Yüklü Uygulamalar).

@@ -17,6 +17,7 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 | **Faz 7** | Özel FreeDesktop Kategori İkonları & Çift Erişimli Ayarlar | ✅ Tamamlandı (%100) |
 | **Faz 8** | Gelişmiş İzin Yönetimi (Flatseal Benzeri), Canlı ODRS & Mimari Rozetleri | ✅ Tamamlandı (%100) |
 | **Faz 9** | Çevrimdışı Mod İyileştirmeleri, ODRS Yorum Gönderme & Flatpak Depo Yönetimi | ✅ Tamamlandı (%100) |
+| **Faz 10** | Çoklu Sıralama, Masaüstü Bildirim Eylemleri & Dokunmatik Jestler | ✅ Tamamlandı (%100) |
 
 ---
 
@@ -38,19 +39,17 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 - [x] **Mimarî Uyumluluk Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU mimari desteğinin detay sayfasında rozet olarak gösterilmesi ve "Donanımınızla Tam Uyumlu" doğrulama rozeti.
 - [x] **Gelişmiş Çevrimdışı Mod (Offline Mode):** Ağ bağlantısı kesildiğinde diskteki `api_cache/` verileriyle sorunsuz çalışma, yerel arama fallback'i, ana ekranda `Gtk.InfoBar` çevrimdışı uyarı çubuğu ve kurulu uygulamalara kesintisiz erişim.
 - [x] **Flatpak Depo (Remote) Yönetimi:** Ayarlar ekranında sistem ve kullanıcı Flatpak depolarının listelenmesi, hazır şablonlar (Flathub Beta, GNOME Nightly, Resmi Flathub) veya özel adresle yeni depo ekleme ve güvenli depo kaldırma/devre dışı bırakma.
+- [x] **Çoklu Kriter Sıralama Seçicisi:** Kategori ve arama ekranlarında "Ada Göre (A-Z)", "En Çok İndirilenler", "Popülerliğe Göre" ve "Son Eklenenler" seçenekleriyle anlık GTK FlowBox sıralaması.
+- [x] **Masaüstü Bildirim Eylemleri:** Uygulama kurulumu veya güncellemesi bittiğinde masaüstü bildiriminde çıkan interaktif "Uygulamayı Başlat" (Launch) butonu.
+- [x] **Wayland Dokunmatik ve Touchpad Jestleri:** Vitrin slider alanında parmakla kaydırma (`Gtk.GestureSwipe`) ve touchpad iki parmak yatay kaydırma (`scroll-event`) ile akıcı geçişler.
 - [x] **Arch Linux & Pars Linux Uyumluluğu:** `python3-apt` zorunluluğunun kaldırılarak sistem bağımsız hale getirilmesi.
 - [x] **Dinamik Kategori Gezintisi:** Sol menüdeki kategorilere tıklandığında anlık Flathub yüklemesi.
 - [x] **Gelişmiş Detay Sayfası:** Ekran görüntüleri, geliştirici bilgisi, lisans, temizlenmiş açıklamalar ve eylem butonları.
-- [x] **Otomatik Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`), başsız GTK testi (`test_mainwindow_headless.py`), ileri düzey özellikler testi (`test_advanced_features.py`) ve Faz 9 entegrasyon testleri (`test_phase9_features.py`).
+- [x] **Kapsamlı Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`), başsız GTK testi (`test_mainwindow_headless.py`), ileri düzey özellikler testi (`test_advanced_features.py`), Faz 9 testleri (`test_phase9_features.py`) ve Faz 10 testleri (`test_phase10_features.py`).
 
 ---
 
-## 🎯 Gelecek Yol Haritası (Faz 10 ve Sonrası)
+## 🎯 Gelecek Vizyonu & Bakım
 
-1. **İndirme ve Güncelleme Bildirimleri İyileştirmesi:**
-   - Masaüstü bildirimleri üzerinden doğrudan uygulamayı başlatma veya güncelleme loglarını görüntüleme.
-2. **Kategoriye Özel Çoklu Sıralama:**
-   - Flathub API'sindeki son güncellenenler, en çok indirilenler ve ada göre filtreleme kriterlerinin arayüze eklenmesi.
-3. **Wayland Dokunmatik Ekran ve Jest Desteği:**
-   - Dokunmatik ekranlı dizüstü bilgisayarlar ve tabletler için FlowBox ve Slider üzerinde kaydırma hareketleri (swipe gestures).
+Tüm 10 geliştirme fazı %100 başarıyla tamamlanmış olup kod tabanı modern, kararlı, yüksek performanslı ve geleceğe hazır durumdadır. İlerleyen süreçte Flathub API güncellemeleri ve yeni GNOME/Wayland standartları periyodik olarak takip edilecektir.
 

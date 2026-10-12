@@ -161,9 +161,31 @@ Pars Linux Yazılım Merkezi için 20 adet özel SVG kategori simgesi ve 3 adet 
 
 ---
 
-## 5. Eşzamanlılık ve Güvenlik İlkeleri
+## 5. Sıralama, Bildirim Eylemleri ve Wayland Jestleri
+
+### A. Çoklu Kriter Sıralama Mimarisi
+- `MainWindow.py` içinde `_setup_sorting_ui()` ile kategori ve arama başlığına `Gtk.ComboBoxText` eklenir.
+- 4 Sıralama Modu:
+  - `0`: Ada Göre (`locale.strxfrm` ile Türkçe duyarlı A-Z).
+  - `1`: En Çok İndirilenler (indirme ve kurulum sayılarına göre azalan).
+  - `2`: Popülerlik (Flathub trend/popülerlik puanına göre azalan).
+  - `3`: Son Eklenenler / Güncellenenler (tarih/timestamp karşılaştırması).
+- Mod değiştiğinde FlowBox C seviyesinde `invalidate_sort()` ile anında yeniden dizilir.
+
+### B. İnteraktif Masaüstü Bildirimleri
+- `MainWindow.notify()` metodu üzerinden kurulum veya güncelleme bittiğinde `libnotify` nesnesine interaktif `launch` eylemi ("Uygulamayı Başlat") iliştirilir.
+- Kullanıcı sistem bildirimindeki butona tıkladığında `FlatpakManager.launch(app_id)` tetiklenir ve uygulama kullanıcı oturumunda açılır.
+
+### C. Wayland & Touchpad Jestleri
+- Vitrin afişi (`ui_slider_overlay`) üzerine `Gtk.GestureSwipe` bağlanarak dokunmatik ekranlar ve touchpad parmak kaydırmaları algılanır.
+- Touchpad iki parmak yatay kaydırma (`scroll-event`) dinleyicisi ile afişler arasında fareye gerek kalmadan geçiş yapılır.
+
+---
+
+## 6. Eşzamanlılık ve Güvenlik İlkeleri
 
 - **Ana Döngü Güvenliği:** GTK iş parçacığı güvenli değildir. Arka plandan yapılan tüm arayüz çağrıları `GLib.idle_add` ile iletilir.
 - **Pango Markup Koruması:** Webden gelen tüm metinler Pango çökmelerine karşı `GLib.markup_escape_text()` ile sanitize edilir.
 - **Güvenli Paket Başlatma:** Flatpak uygulamaları ana yazılım merkezinin sürecinden bağımsız (`start_new_session=True`) başlatılır.
+
 

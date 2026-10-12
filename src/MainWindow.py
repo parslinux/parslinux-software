@@ -177,6 +177,10 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
         self.ui_parslinuxapps_flowbox.set_sort_func(self.parslinuxapps_sort_func)
         self._flowbox_app_ids = set()
 
+        # Faz 10: Sıralama seçici bileşeni
+        self._current_sort_mode = 0
+        self._setup_sorting_ui()
+
         self.ui_parslinuxapps_title_stack = self.GtkBuilder.get_object("ui_parslinuxapps_title_stack")
         self.ui_searchterm_label = self.GtkBuilder.get_object("ui_searchterm_label")
 
@@ -1209,6 +1213,45 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
             GLib.idle_add(self._load_next_apps_chunk, remaining_items, end_idx, token, priority=GLib.PRIORITY_LOW)
         return False
 
+    def _setup_sorting_ui(self):
+        """Faz 10: Kategori ve arama ekranları için çoklu kriter sıralama açılır menüsü."""
+        try:
+            self.ui_sort_combobox = Gtk.ComboBoxText()
+            self.ui_sort_combobox.append("0", _("Ada Göre (A-Z)"))
+            self.ui_sort_combobox.append("1", _("En Çok İndirilenler"))
+            self.ui_sort_combobox.append("2", _("Popülerliğe Göre"))
+            self.ui_sort_combobox.append("3", _("Son Eklenenler"))
+            self.ui_sort_combobox.set_active(0)
+            self.ui_sort_combobox.connect("changed", self._on_sort_combobox_changed)
+            self.ui_sort_combobox.set_tooltip_text(_("Uygulama Sıralama Ölçütü"))
+
+            sort_icon = Gtk.Image.new_from_icon_name("view-sort-ascending-symbolic", Gtk.IconSize.BUTTON)
+
+            sort_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+            sort_box.pack_start(sort_icon, False, False, 0)
+            sort_box.pack_start(self.ui_sort_combobox, False, False, 0)
+            sort_box.set_valign(Gtk.Align.CENTER)
+
+            if hasattr(self, "ui_currentcat_label") and self.ui_currentcat_label:
+                inner_box = self.ui_currentcat_label.get_parent()
+                if inner_box:
+                    outer_box = inner_box.get_parent()
+                    if isinstance(outer_box, Gtk.Box):
+                        outer_box.pack_end(sort_box, False, False, 12)
+                        sort_box.show_all()
+        except Exception as e:
+            self.Logger.exception(f"Error setting up sorting UI: {e}")
+
+    def _on_sort_combobox_changed(self, combo):
+        active_id = combo.get_active_id()
+        try:
+            self._current_sort_mode = int(active_id) if active_id is not None else 0
+        except (ValueError, TypeError):
+            self._current_sort_mode = 0
+        self.Logger.info(f"FlowBox sort mode updated to: {self._current_sort_mode}")
+        if hasattr(self, "ui_parslinuxapps_flowbox") and self.ui_parslinuxapps_flowbox:
+            self.ui_parslinuxapps_flowbox.invalidate_sort()
+
     def parslinuxapps_sort_func(self, row1, row2):
         try:
             lb1 = row1.get_child() or (row1.get_children()[0] if row1.get_children() else None)
@@ -1222,24 +1265,47 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
             d2 = getattr(lb2, "app_details", None) or (self.apps_full.get(app2, {}) if hasattr(self, "apps_full") else {})
 
             mode = getattr(self, "_current_sort_mode", 0)
-            if mode == 0:  # Name
+            if mode == 0:  # Name (A-Z)
                 name1 = d1.get("prettyname", {}) if isinstance(d1, dict) else {}
                 n1 = name1.get(self.user_locale, name1.get("en", app1)) if isinstance(name1, dict) else str(name1 or app1)
                 name2 = d2.get("prettyname", {}) if isinstance(d2, dict) else {}
                 n2 = name2.get(self.user_locale, name2.get("en", app2)) if isinstance(name2, dict) else str(name2 or app2)
-                return 1 if locale.strxfrm(str(n1)) > locale.strxfrm(str(n2)) else -1
-            elif mode == 1:  # Download
-                dl1 = (d1.get("download", 0) if isinstance(d1, dict) else 0, d1.get("rate_average", 0) if isinstance(d1, dict) else 0)
-                dl2 = (d2.get("download", 0) if isinstance(d2, dict) else 0, d2.get("rate_average", 0) if isinstance(d2, dict) else 0)
-                return -1 if dl1 > dl2 else (1 if dl1 < dl2 else 0)
-            elif mode == 2:  # Popularity
-                pop1 = (d1.get("popularity", d1.get("rate_average", 0)) if isinstance(d1, dict) else 0, d1.get("download", 0) if isinstance(d1, dict) else 0)
-                pop2 = (d2.get("popularity", d2.get("rate_average", 0)) if isinstance(d2, dict) else 0, d2.get("download", 0) if isinstance(d2, dict) else 0)
-                return -1 if pop1 > pop2 else (1 if pop1 < pop2 else 0)
-            elif mode == 3:  # Last added / Date
-                date1 = d1.get("date", "") if isinstance(d1, dict) else ""
-                date2 = d2.get("date", "") if isinstance(d2, dict) else ""
+                try:
+                    k1 = locale.strxfrm(str(n1).casefold())
+                    k2 = locale.strxfrm(str(n2).casefold())
+                    return 1 if k1 > k2 else (-1 if k1 < k2 else 0)
+                except Exception:
+                    return 1 if str(n1).lower() > str(n2).lower() else -1
+
+            elif mode == 1:  # Download count / ratings
+                dl1 = 0
+                dl2 = 0
+                if isinstance(d1, dict):
+                    dl1 = d1.get("download", 0) or d1.get("downloads", 0) or d1.get("installs_30", 0) or 0
+                if isinstance(d2, dict):
+                    dl2 = d2.get("download", 0) or d2.get("downloads", 0) or d2.get("installs_30", 0) or 0
+                if dl1 != dl2:
+                    return -1 if dl1 > dl2 else 1
+                r1 = d1.get("rate_average", 0) if isinstance(d1, dict) else 0
+                r2 = d2.get("rate_average", 0) if isinstance(d2, dict) else 0
+                return -1 if r1 > r2 else (1 if r1 < r2 else 0)
+
+            elif mode == 2:  # Popularity / Trending
+                pop1 = 0
+                pop2 = 0
+                if isinstance(d1, dict):
+                    pop1 = d1.get("popularity", 0) or d1.get("trending", 0) or d1.get("rate_average", 0) or 0
+                if isinstance(d2, dict):
+                    pop2 = d2.get("popularity", 0) or d2.get("trending", 0) or d2.get("rate_average", 0) or 0
+                if pop1 != pop2:
+                    return -1 if pop1 > pop2 else 1
+                return 0
+
+            elif mode == 3:  # Last added / updated Date
+                date1 = d1.get("date", "") or d1.get("timestamp", 0) or "" if isinstance(d1, dict) else ""
+                date2 = d2.get("date", "") or d2.get("timestamp", 0) or "" if isinstance(d2, dict) else ""
                 return -1 if str(date1) > str(date2) else (1 if str(date1) < str(date2) else 0)
+
             return 0
         except Exception:
             return 0
@@ -2266,28 +2332,39 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
 
     def notify(self, message_summary="", message_body=""):
         try:
-            if Notify.is_initted():
-                Notify.uninit()
+            if not Notify.is_initted():
+                Notify.init(_("Pars Linux Software Center"))
 
             if message_summary == "" and message_body == "":
-                Notify.init(_("Pars Linux Software Center"))
+                actioned_app = getattr(self, "inprogress_app_name", "")
+                pretty_name = self.get_pretty_name_from_app_name(actioned_app) if actioned_app else _("Uygulama")
                 if self.isinstalled:
-                    notification = Notify.Notification.new("{} {}".format(
-                        self.get_pretty_name_from_app_name(self.inprogress_app_name),_("Updated") if self.isupgrade else _("Removed")))
+                    status_text = _("Güncellendi") if self.isupgrade else _("Kaldırıldı")
                 else:
-                    notification = Notify.Notification.new("{} {}".format(
-                        self.get_pretty_name_from_app_name(self.inprogress_app_name), _("Installed")))
-                try:
-                    notification.set_app_icon("parslinux-software")
-                except AttributeError:
-                    notification.set_image_from_pixbuf(
-                        Gtk.IconTheme.get_default().load_icon("parslinux-software", 64, Gtk.IconLookupFlags(16)))
-                except Exception as e:
-                    self.Logger.exception("{}".format(e))
+                    status_text = _("Yüklendi")
+                summary = f"{pretty_name} {status_text}"
+                notification = Notify.Notification.new(summary, "", "parslinux-software")
+
+                # Faz 10: Masaüstü bildirimine "Uygulamayı Başlat" interaktif buton eylemi ekleme
+                if (not self.isinstalled or self.isupgrade) and actioned_app:
+                    def _on_notification_launch_clicked(n, action, app_id):
+                        self.Logger.info(f"Notification launch action triggered for: {app_id}")
+                        if hasattr(self, "FlatpakManager") and self.FlatpakManager:
+                            self.FlatpakManager.launch(app_id)
+
+                    try:
+                        notification.add_action("launch", _("Uygulamayı Başlat"), _on_notification_launch_clicked, actioned_app)
+                    except Exception as ex:
+                        self.Logger.debug(f"Notification server may not support actions: {ex}")
             else:
-                Notify.init(_("Pars Linux Software Center"))
                 notification = Notify.Notification.new(message_summary, message_body, "parslinux-software")
+
+            try:
+                notification.set_app_icon("parslinux-software")
+            except Exception:
+                pass
+
             notification.show()
         except Exception as e:
-            self.Logger.exception("{}".format(e))
+            self.Logger.exception(f"Error showing notification: {e}")
 
