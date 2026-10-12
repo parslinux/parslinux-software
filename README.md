@@ -88,6 +88,7 @@ Tüm teknik, mimari ve kullanıcı rehberleri **[docs/](docs/)** dizini altında
 | **[Uygulama Bağlama (UYGULAMA_BAGLAMA.md)](docs/UYGULAMA_BAGLAMA.md)** | Flathub'da uygulama yayınlama ve AppStream hazırlama |
 | **[Veri Tasarrufu (DATA_SAVING_GUIDE.md)](docs/DATA_SAVING_GUIDE.md)** | 2-tier disk önbelleği, TTL yönetimi ve bant genişliği tasarrufu |
 | **[Güvenlik (SECURITY.md)](docs/SECURITY.md)** | Polkit, Bubblewrap sandbox ve açık bildirim süreci |
+| **[Çatallanma ve Yeniden Yapılandırma (FORK.md)](docs/FORK.md)** | Orijinal proje kökeni, çatallanma gerekçeleri ve mimari dönüşüm |
 | **[Sürüm Politikası (VERSION.md)](docs/VERSION.md)** | SemVer sürümleme ilkeleri |
 
 ---

@@ -24,6 +24,7 @@ Pars Linux Yazılım Merkezi (Pars Linux Software Center) için hazırlanmış k
 | **[UYGULAMA BAĞLAMA VE YAYINLAMA (UYGULAMA_BAGLAMA.md)](UYGULAMA_BAGLAMA.md)** | Flathub veya Pars Linux deposuna uygulama ekleme ve paketleme rehberi |
 | **[VERİ VE ÖNBELLEK REHBERİ (DATA_SAVING_GUIDE.md)](DATA_SAVING_GUIDE.md)** | Çift katmanlı disk TTL önbelleği, 250ms debouncing ve bant genişliği optimizasyonu |
 | **[GÜVENLİK POLİTİKASI (SECURITY.md)](SECURITY.md)** | Polkit izinleri, Flatpak sandbox güvenliği ve açık bildirim süreci |
+| **[ÇATALLANMA VE YENİDEN YAPILANDIRMA (FORK.md)](FORK.md)** | Orijinal proje kökeni, çatallanma gerekçeleri ve mimari dönüşüm |
 | **[SÜRÜM POLİTİKASI (VERSION.md)](VERSION.md)** | Semantik sürümleme (SemVer) ve paketleme yaşam döngüsü |
 
 ---
