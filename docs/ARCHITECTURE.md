@@ -58,8 +58,11 @@ Uygulama, eski ve hantal `.tar.gz` metadata sunucu modeli yerine, modern ve dağ
    - Sunucu soyutlama ve veri köprüsü katmanıdır.
    - Flathub modunda (`backend = flathub`), `FlathubClient` verilerini arayüzün beklediği `apps.json`, `cats.json` ve `home.json` veri yapılarına dönüştürerek yerel önbelleğe yazar.
 
-3. **`src/AppImage.py`**:
-   - Detay sayfasındaki büyük ekran görüntülerini GLib Gio ve GdkPixbuf asenkron akışları (`read_async`, `new_from_stream_async`) ile arka planda çözer ve ana döngüyü bloke etmeden gösterir.
+4. **`src/ODRSClient.py`**:
+   - `https://odrs.gnome.org` REST API'si üzerinden Open Desktop Rating Service oylama ve kullanıcı yorumlarını çeker.
+   - 1-5 yıldız oylama dağılımını, ağırlıklı ortalama puanı ve toplam oy sayısını hesaplar.
+   - Kullanıcının sistem diline (`user_locale`) göre filtrelenmiş ve sıralanmış gerçek topluluk incelemelerini asenkron (`fetch_feedback_async`) olarak sunar.
+   - Puanlar için 2 saat, yorumlar için 1 saat yerel TTL disk önbelleği uygular.
 
 ---
 
@@ -68,12 +71,14 @@ Uygulama, eski ve hantal `.tar.gz` metadata sunucu modeli yerine, modern ve dağ
 1. **`src/FlatpakManager.py`**:
    - Sistemdeki `/usr/bin/flatpak` motorunu yönetir.
    - Sistem veya kullanıcı alanında kurulu Flatpak uygulamalarını (`flatpak list --app`) tarar ve `_installed_cache` sözlüğünde tutar.
-   - Kurulum, kaldırma ve güncelleme işlemlerini bağımsız süreçlerle çalıştırır.
+   - **Gelişmiş İzin Yönetimi (Flatseal Benzeri):** `~/.local/share/flatpak/overrides/<app_id>` dosyasını okuyup ayrıştırarak ağ, ev dizini, dosya sistemi, ekran sunucusu, ses ve donanım izinlerini raporlar; `flatpak override --user` ile değiştirir veya sıfırlar.
+   - **Güncelleme Motoru:** `flatpak remote-ls --updates` ile bekleyen güncellemeleri tespit eder; `update_all` ile tüm uygulamaları topluca günceller.
    - Kurulu uygulamaları masaüstü ortamında `start_new_session=True` ile bağımsız bir süreç olarak başlatır (`launch`).
 
 2. **`src/Package.py`**:
-   - Uygulamanın kurulu olup olmadığını (`isinstalled`), sürümünü ve boyutunu sorgulayan soyutlama katmanıdır.
-   - Dağıtımdan bağımsız olarak `FlatpakManager`'a yönlendirme yaparak Arch Linux, Pars Linux ve Debian'da hatasız çalışmayı garanti eder.
+   - Uygulamanın kurulu olup olmadığını (`isinstalled`), sürümünü, boyutunu ve güncellenebilirliğini sorgulayan soyutlama katmanıdır.
+   - `FlatpakManager` ile entegre çalışarak bekleyen güncellemeleri (`get_upgradable_apps`, `is_upgradable`) köprüler.
+   - Dağıtımdan bağımsız olarak Arch Linux, Pars Linux ve Debian'da kesintisiz çalışma sağlar.
 
 3. **`src/Actions.py`**:
    - Polkit ayrıcalıklı işlemlerini ve paket kurma/kaldırma alt süreçlerini koordine eder.
@@ -99,8 +104,10 @@ Monolitik `MainWindow.py` karmaşıklığını engellemek için tüm arayüz man
 
 4. **`DetailMixin.py`**:
    - Bir uygulama kartına tıklandığında açılan detay sayfasını yönetir.
+   - **Mimarî Rozetleri:** `FlathubClient.get_app_summary` ile `x86_64`, `aarch64` ve `riscv64` donanım desteği rozetlerini ve sistem uyumluluk bildirimini gösterir.
+   - **Gelişmiş İzin Düzenleyici:** Kurulu uygulamalar için açılır-kapanır Flatseal benzeri interaktif izin düzenleyici panelini oluşturur.
+   - **Canlı ODRS Yorumları:** Yıldız dağılımlarını, ortalama puanı ve topluluk incelemelerini asenkron olarak yerleştirir.
    - AppStream açıklamalarını Pango uyumlu temiz metne dönüştürür; geliştirici, lisans, boyut ve indirme bilgilerini yerleştirir.
-   - Uygulamanın kurulu olma durumuna göre "Aç", "Kur", "Kaldır" buton durumlarını ve Flatpak izin rozetlerini günceller.
 
 5. **`QueueMixin.py`**:
    - Eşzamanlı veya ardışık indirme/kurulum görevlerini yönetir.
@@ -108,6 +115,7 @@ Monolitik `MainWindow.py` karmaşıklığını engellemek için tüm arayüz man
 
 6. **`InstalledMixin.py`**:
    - Sistemde kurulu olan Flatpak ve yerel paketlerin listelendiği görünümü yönetir.
+   - Bekleyen güncellemeleri algılar ve "Tümünü Güncelle" (Update All) butonu ile tek tıkla toplu güncelleme sürecini başlatır.
    - Tek tıkla kaldırma veya çalıştırma işlemlerini listeler.
 
 ---

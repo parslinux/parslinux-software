@@ -15,7 +15,7 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 | **Faz 5** | Modüler Mimari & Denetleyici Ayrıştırması (`src/controllers/`) | ✅ Tamamlandı (%100) |
 | **Faz 6** | Performans & 0ms Sıfır Titreme (Zero-Flicker) FlowBox | ✅ Tamamlandı (%100) |
 | **Faz 7** | Özel FreeDesktop Kategori İkonları & Çift Erişimli Ayarlar | ✅ Tamamlandı (%100) |
-| **Faz 8** | Gelişmiş İzin Yönetimi (Flatseal Benzeri) & ODRS Oylama | 🔄 Planlanıyor |
+| **Faz 8** | Gelişmiş İzin Yönetimi (Flatseal Benzeri), Canlı ODRS & Mimari Rozetleri | ✅ Tamamlandı (%100) |
 
 ---
 
@@ -30,21 +30,23 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 - [x] **Özel FreeDesktop Vektör İkonları:** 20 adet özgün SVG kategori ikonu (`ps-cat-*.svg`) ve 3 adet SVG yıldız simgesi.
 - [x] **Asenkron İkon İndirici:** `ThreadPoolExecutor` ile simgelerin arka planda indirilip yerel diskte önbelleğe alınması.
 - [x] **Flatpak Paket Yönetimi:** Kurulu uygulamaları listeleme, kurma, kaldırma, güncelleme ve bağımsız süreçte başlatma.
+- [x] **Gelişmiş İzin Düzenleyici (Permission Editor):** Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (Ağ, Dosya Sistemi, Ekran, Ses, Kamera vb.) kullanıcı arayüzünden doğrudan açıp kapatabilme (`flatpak override --user`) ve varsayılana sıfırlama.
+- [x] **Canlı ODRS (Open Desktop Rating Service) Yorumları & Puanlama:** `odrs.gnome.org` üzerinden 1-5 yıldızlı topluluk oylamaları, ortalama puanlar ve yerel kullanıcı yorumlarının detay sayfasında asenkron listelenmesi (`ODRSClient.py`).
+- [x] **Sistem ve Flatpak Güncellemeleri:** Bekleyen Flatpak güncellemelerinin anlık algılanması (`flatpak remote-ls --updates`) ve tek tıkla topluca güncellenmesini sağlayan "Tümünü Güncelle" arayüz butonu.
+- [x] **Mimarî Uyumluluk Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU mimari desteğinin detay sayfasında rozet olarak gösterilmesi ve "Donanımınızla Tam Uyumlu" doğrulama rozeti.
 - [x] **Arch Linux & Pars Linux Uyumluluğu:** `python3-apt` zorunluluğunun kaldırılarak sistem bağımsız hale getirilmesi.
 - [x] **Dinamik Kategori Gezintisi:** Sol menüdeki kategorilere tıklandığında anlık Flathub yüklemesi.
 - [x] **Gelişmiş Detay Sayfası:** Ekran görüntüleri, geliştirici bilgisi, lisans, temizlenmiş açıklamalar ve eylem butonları.
-- [x] **Otomatik Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`) ve başsız GTK testi (`test_mainwindow_headless.py`).
+- [x] **Otomatik Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`), başsız GTK testi (`test_mainwindow_headless.py`) ve ileri düzey özellikler testi (`test_advanced_features.py`).
 
 ---
 
-## 🎯 Gelecek Yol Haritası (Faz 8 ve Sonrası)
+## 🎯 Gelecek Yol Haritası (Faz 9 ve Sonrası)
 
-1. **Gelişmiş İzin Düzenleyici (Permission Editor):**
-   - Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (Ağ, Dosya Sistemi, Kamera, Mikrofon vb.) kullanıcı arayüzünden doğrudan açıp kapatabilme.
-2. **Kullanıcı Yorumları ve Değerlendirmeler:**
-   - ODRS (Open Desktop Rating Service) veya Flathub topluluk oylamalarının detay sayfasına entegrasyonu.
-3. **Sistem ve Flatpak Güncellemeleri Sekmesi:**
-   - Bekleyen Flatpak güncellemelerinin tek tıkla topluca güncellenmesini sağlayan arayüz paneli.
-4. **Mimarî Rozetleri:**
-   - Uygulamanın `x86_64`, `aarch64` (ARM) ve RISC-V desteğinin detay sayfasında rozet olarak belirtilmesi.
+1. **Çevrimdışı Mod İyileştirmeleri:**
+   - İnternet bağlantısı kesildiğinde önbelleğe alınmış Flathub verileriyle gezinmeye devam edebilme.
+2. **Kullanıcı İncelemesi Gönderme:**
+   - ODRS API üzerinden doğrudan yazılım merkezi içinden yeni yorum ve puan gönderebilme.
+3. **Flatpak Depo (Remote) Yönetimi:**
+   - Kullanıcıların özel Flatpak repolarını (Flathub Beta, yerel depolar) arayüzden ekleyip kaldırabilmesi.
 

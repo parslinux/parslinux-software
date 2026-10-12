@@ -2,12 +2,15 @@ import os
 import re
 import html
 import threading
+import platform
 import gettext
 from datetime import datetime, timezone
 
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Pango, GdkPixbuf, GObject
+
+from ODRSClient import ODRSClient
 
 _ = gettext.gettext
 
@@ -342,6 +345,8 @@ class DetailMixin:
             self.ui_ad_category_label.set_text(app_category_name)
             self.ui_ad_license_label.set_text(details.get("license") or "")
             self.display_app_sandbox_permissions(app_name)
+            self.display_app_architecture_badges(app_name)
+            self.load_odrs_ratings_and_reviews(app_name)
 
             codenames = [c.get("name") for c in (details.get("codename") or [])]
             for codename in codenames:
@@ -543,7 +548,11 @@ class DetailMixin:
 
         def _fetch_and_render():
             perms = self.FlatpakManager.get_permissions(app_name)
+            is_installed = self.Package.isinstalled(app_name)
+            overrides = self.FlatpakManager.get_permission_overrides(app_name) if is_installed else {}
+
             def _render():
+                self.ui_ad_permissions_box.foreach(self.ui_ad_permissions_box.remove)
                 if not perms or not perms.get("items"):
                     self.ui_ad_permissions_box.set_visible(False)
                     return
@@ -575,9 +584,186 @@ class DetailMixin:
                     flow.insert(badge, -1)
 
                 self.ui_ad_permissions_box.pack_start(flow, False, False, 0)
+
+                # Interactive Permission Editor (Flatseal-like) for installed apps
+                if is_installed and overrides:
+                    expander = Gtk.Expander.new(_("İzinleri Düzenle (Flatseal Benzeri)"))
+                    expander.set_margin_top(8)
+
+                    edit_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 6)
+                    edit_box.set_margin_start(8)
+                    edit_box.set_margin_end(8)
+                    edit_box.set_margin_top(6)
+                    edit_box.set_margin_bottom(6)
+
+                    desc_lbl = Gtk.Label.new()
+                    desc_lbl.set_markup("<small><i>{}</i></small>".format(
+                        _("Uygulamanın sandbox izinlerini özelleştirin (Geçerli olması için uygulamayı yeniden başlatın):")
+                    ))
+                    desc_lbl.props.halign = Gtk.Align.START
+                    edit_box.pack_start(desc_lbl, False, False, 4)
+
+                    for key, pinfo in overrides.items():
+                        row = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 8)
+                        row.set_margin_top(2)
+                        row.set_margin_bottom(2)
+
+                        icon = Gtk.Image.new_from_icon_name(pinfo["icon"], Gtk.IconSize.BUTTON)
+                        lbl = Gtk.Label.new(pinfo["label"])
+                        lbl.props.halign = Gtk.Align.START
+
+                        switch = Gtk.Switch.new()
+                        switch.set_active(pinfo["effective"])
+                        switch.props.valign = Gtk.Align.CENTER
+
+                        def _make_handler(k):
+                            def _on_state_set(sw, state):
+                                self.FlatpakManager.set_permission_override(app_name, k, state)
+                                self.Logger.info(f"Permission {k} overridden to {state} for {app_name}")
+                                GLib.idle_add(lambda: self.display_app_sandbox_permissions(app_name))
+                                return False
+                            return _on_state_set
+
+                        switch.connect("state-set", _make_handler(key))
+
+                        row.pack_start(icon, False, False, 4)
+                        row.pack_start(lbl, False, False, 4)
+
+                        if pinfo.get("overridden"):
+                            tag = Gtk.Label.new()
+                            tag.set_markup("<span foreground='#3498db'><small><b>(Özelleştirildi)</b></small></span>")
+                            row.pack_start(tag, False, False, 6)
+
+                        row.pack_end(switch, False, False, 4)
+                        edit_box.pack_start(row, False, False, 2)
+
+                    # Reset to defaults button
+                    btn_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 8)
+                    btn_box.set_margin_top(6)
+                    reset_btn = Gtk.Button.new_with_label(_("Varsayılan İzinlere Sıfırla"))
+                    reset_btn.get_style_context().add_class("parslinux-software-button-warn")
+
+                    def _on_reset(btn):
+                        self.FlatpakManager.reset_permissions(app_name)
+                        GLib.idle_add(lambda: self.display_app_sandbox_permissions(app_name))
+
+                    reset_btn.connect("clicked", _on_reset)
+                    btn_box.pack_start(reset_btn, False, False, 0)
+                    edit_box.pack_start(btn_box, False, False, 4)
+
+                    expander.add(edit_box)
+                    self.ui_ad_permissions_box.pack_start(expander, False, False, 4)
+
                 self.ui_ad_permissions_box.show_all()
 
             GLib.idle_add(_render)
+
+        threading.Thread(target=_fetch_and_render, daemon=True).start()
+
+    def display_app_architecture_badges(self, app_name):
+        if not hasattr(self, "ui_ad_arches_box"):
+            self.ui_ad_arches_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 8)
+            self.ui_ad_arches_box.set_margin_top(6)
+            self.ui_ad_arches_box.set_margin_bottom(8)
+            self.ui_ad_details_box.pack_start(self.ui_ad_arches_box, False, False, 0)
+
+        self.ui_ad_arches_box.foreach(self.ui_ad_arches_box.remove)
+        self.ui_ad_arches_box.set_visible(False)
+
+        def _fetch_arches():
+            flathub_client = getattr(self, "FlathubClient", None) or (
+                getattr(self.Server, "FlathubClient", None) if hasattr(self, "Server") else None
+            )
+            if not flathub_client:
+                return
+
+            summary = flathub_client.get_app_summary(app_name)
+            arches = summary.get("arches") or ["x86_64"]
+
+            def _render():
+                self.ui_ad_arches_box.foreach(self.ui_ad_arches_box.remove)
+                self.ui_ad_arches_box.set_visible(True)
+
+                title = Gtk.Label.new()
+                title.set_markup("<b>{}</b>".format(_("Desteklenen Mimariler:")))
+                self.ui_ad_arches_box.pack_start(title, False, False, 4)
+
+                host_machine = platform.machine()
+                arch_labels = {
+                    "x86_64": "x86_64 (64-bit PC)",
+                    "aarch64": "aarch64 (ARM 64)",
+                    "riscv64": "riscv64 (RISC-V)",
+                    "arm": "arm (32-bit)",
+                }
+
+                for arch in arches:
+                    badge = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 4)
+                    badge.get_style_context().add_class("parslinux-software-frame")
+                    lbl = Gtk.Label.new()
+                    disp = arch_labels.get(arch, arch)
+                    if arch == host_machine:
+                        lbl.set_markup(f"<small><b>✓ {disp}</b></small>")
+                    else:
+                        lbl.set_markup(f"<small>{disp}</small>")
+                    badge.pack_start(lbl, False, False, 6)
+                    self.ui_ad_arches_box.pack_start(badge, False, False, 2)
+
+                if host_machine in arches:
+                    compat = Gtk.Label.new()
+                    compat.set_markup("<span foreground='#2ecc71'><small><b>✓ Donanımınızla Tam Uyumlu</b></small></span>")
+                    compat.set_margin_start(8)
+                    self.ui_ad_arches_box.pack_start(compat, False, False, 0)
+
+                self.ui_ad_arches_box.show_all()
+
+            GLib.idle_add(_render)
+
+        threading.Thread(target=_fetch_arches, daemon=True).start()
+
+    def load_odrs_ratings_and_reviews(self, app_name):
+        if not hasattr(self, "ODRSClient") or self.ODRSClient is None:
+            self.ODRSClient = ODRSClient()
+
+        def _on_feedback(ratings, reviews):
+            if ratings and ratings.get("status"):
+                avg = ratings.get("average", 0.0)
+                count = ratings.get("count", 0)
+                self.set_rating_stars(avg)
+                self.ui_ad_top_avgrate_label.set_text(f"{avg:.1f}")
+                self.ui_ad_bottom_avgrate_label.set_markup(f"<span font='54'><b>{avg:.1f}</b></span>")
+                self.ui_ad_bottom_rate_count_label.set_text(_("{} Değerlendirme").format(count))
+                self.set_rating_progressbar(
+                    count,
+                    ratings.get("star1", 0),
+                    ratings.get("star2", 0),
+                    ratings.get("star3", 0),
+                    ratings.get("star4", 0),
+                    ratings.get("star5", 0),
+                )
+
+            if hasattr(self, "ui_ad_comments_flowbox") and self.ui_ad_comments_flowbox:
+                for child in self.ui_ad_comments_flowbox.get_children():
+                    self.ui_ad_comments_flowbox.remove(child)
+
+                if reviews:
+                    for rev in reviews[:15]:
+                        widget = self.create_comment_widget(rev, gnome=True)
+                        self.ui_ad_comments_flowbox.insert(widget, -1)
+                else:
+                    empty_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 6)
+                    empty_box.set_margin_top(16)
+                    empty_box.set_margin_bottom(16)
+                    empty_lbl = Gtk.Label.new()
+                    empty_lbl.set_markup(f"<span color='gray'>{_('Bu uygulama için henüz kullanıcı değerlendirmesi bulunmuyor.')}</span>")
+                    empty_box.pack_start(empty_lbl, False, False, 0)
+                    row = Gtk.ListBoxRow()
+                    row.add(empty_box)
+                    self.ui_ad_comments_flowbox.insert(row, -1)
+
+                self.ui_ad_comments_flowbox.show_all()
+
+        self.ODRSClient.fetch_feedback_async(app_name, _on_feedback, user_locale=getattr(self, "user_locale", "tr"))
+
 
         threading.Thread(target=_fetch_and_render, daemon=True).start()
 

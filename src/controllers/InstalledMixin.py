@@ -24,7 +24,52 @@ class InstalledMixin:
 
             if is_installed and is_upgradable:
                 self.upgradables[app] = details
+
+        # Flatpak güncellemelerini de ekle
+        try:
+            if hasattr(self.Package, "get_upgradable_apps"):
+                flatpak_upgradables = self.Package.get_upgradable_apps()
+                for fp_id, fp_info in flatpak_upgradables.items():
+                    if fp_id not in self.upgradables:
+                        details = self.apps.get(fp_id)
+                        if not details:
+                            details = {
+                                "name": fp_id,
+                                "description": _("Flatpak update available"),
+                                "icon_name": fp_id,
+                                "category": "Updates",
+                                "package_names": [fp_id],
+                                "flatpak": True,
+                            }
+                        self.upgradables[fp_id] = details
+        except Exception as e:
+            self.Logger.warning(f"Error fetching Flatpak upgradables: {e}")
+
         self.Logger.info(f"Upgradable apps: {', '.join(self.upgradables.keys())}")
+
+    def on_update_all_clicked(self, button):
+        if not self.upgradables:
+            return
+
+        button.set_sensitive(False)
+        self.Logger.info(f"Updating all apps: {list(self.upgradables.keys())}")
+
+        for app_name, details in list(self.upgradables.items()):
+            if any(item.get("name") == app_name for item in self.queue) or getattr(self, "inprogress_app_name", "") == app_name:
+                continue
+
+            command = self.get_action_command(app_name, details)
+            desktop_id = details.get("desktop", "")
+
+            self.queue.append({"name": app_name, "command": command, "desktop_id": desktop_id, "upgrade": True})
+            self.add_to_queue_ui(app_name, True, details.get("icon_name"))
+            self.update_app_widget_label(app_name)
+
+        if not getattr(self, "inprogress", False) and len(self.queue) > 0:
+            first = self.queue[0]
+            self.ui_header_queue_button.set_visible(True)
+            self.ui_queue_stack.set_visible_child_name("inprogress")
+            self.action_package(first["name"], first["command"], first["desktop_id"], first["upgrade"])
 
     def set_upgradables(self):
         if not self.Server.connection:
@@ -37,8 +82,23 @@ class InstalledMixin:
         GLib.idle_add(lambda: (self.ui_leftupdates_listbox and self.ui_leftupdates_listbox.foreach(
             lambda child: self.ui_leftupdates_listbox.remove(child)), False))
 
-        GLib.idle_add(self.ui_leftupdates_separator.set_visible, self.upgradables)
-        GLib.idle_add(self.ui_upgradableapps_box.set_visible, self.upgradables)
+        GLib.idle_add(self.ui_leftupdates_separator.set_visible, bool(self.upgradables))
+        GLib.idle_add(self.ui_upgradableapps_box.set_visible, bool(self.upgradables))
+
+        # 'Tümünü Güncelle' butonunu ekle/güncelle
+        if not hasattr(self, "ui_update_all_button") or self.ui_update_all_button is None:
+            self.ui_update_all_button = Gtk.Button.new_with_label(_("Update All"))
+            self.ui_update_all_button.get_style_context().add_class("suggested-action")
+            self.ui_update_all_button.set_tooltip_text(_("Update all pending applications"))
+            self.ui_update_all_button.connect("clicked", self.on_update_all_clicked)
+            if hasattr(self, "ui_upgradableapps_box") and self.ui_upgradableapps_box:
+                self.ui_upgradableapps_box.pack_end(self.ui_update_all_button, False, False, 6)
+
+        if hasattr(self, "ui_update_all_button") and self.ui_update_all_button:
+            has_updates = bool(self.upgradables)
+            is_in_progress = getattr(self, "inprogress", False)
+            GLib.idle_add(self.ui_update_all_button.set_visible, has_updates)
+            GLib.idle_add(self.ui_update_all_button.set_sensitive, has_updates and not is_in_progress)
 
         if self.Server.connection and self.upgradables:
             updates_icon = Gtk.Image.new_from_icon_name("ps-cat-updates-symbolic", Gtk.IconSize.BUTTON)

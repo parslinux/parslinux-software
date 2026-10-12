@@ -338,3 +338,25 @@ class FlathubClient:
             icon_url = app.get("icon_url")
             if app_id and icon_url:
                 self.executor.submit(_download, app_id, icon_url)
+
+    def get_app_summary(self, app_id):
+        """
+        Fetches app summary from Flathub /summary/{id} endpoint.
+        Returns dict with keys: 'arches', 'download_size', 'installed_size', 'timestamp', 'branches'
+        Results are cached on disk for 24 hours.
+        """
+        if not app_id:
+            return {}
+
+        cache_key = f"summary_{app_id}"
+        cached_data, is_stale = self._get_cached_json(cache_key, ttl_seconds=86400)
+        if cached_data is not None and not is_stale:
+            return cached_data
+
+        data = self._request(f"/summary/{app_id}", timeout=6)
+        if data and isinstance(data, dict):
+            self._set_cached_json(cache_key, data)
+            return data
+        elif cached_data is not None:
+            return cached_data
+        return {}

@@ -10,6 +10,10 @@ Pars Linux Yazılım Merkezi, modern Flatpak ekosistemini temel alarak evrensel 
 
 - **Flathub REST API v2 & Meilisearch:** Binlerce güncel uygulamayı popüler, trend, kategori ve canlı arama desteğiyle sunar.
 - **Evrensel Flatpak Yönetimi:** Tek tıkla kurma, kaldırma, güncelleme ve doğrudan masaüstünde bağımsız süreçte başlatma.
+- **Gelişmiş İzin Düzenleyici (Permission Editor):** Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (Ağ, Dosya Sistemi, Ekran, Ses, Donanım) arayüzden doğrudan açıp kapatabilme (`flatpak override --user`) ve sıfırlama.
+- **Canlı ODRS Yorumları & Puanlama:** Open Desktop Rating Service (`odrs.gnome.org`) üzerinden 1-5 yıldız oylama dağılımları ve topluluk incelemeleri.
+- **Sistem ve Flatpak Güncellemeleri:** Bekleyen güncellemeleri anlık tespit edip tek tıkla topluca güncelleyen "Tümünü Güncelle" paneli.
+- **Mimarî Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU desteği ile donanım uyumluluk rozetleri.
 - **Modüler Denetleyici Mimarisi (`src/controllers/`):** Bakımı kolaylaştıran 6 bağımsız mixin yapısı (Slider, Galeri, Arama & Kategori, Detay, Kuyruk ve Yüklü Uygulamalar).
 - **0ms Sıfır Titreme (Zero-Flicker) FlowBox:** Senkron kart inşası, kalıcı kayıt defteri ve yerel GTK filtreleme/sıralama mekanizmasıyla akıcı ve anlık sayfa geçişleri.
 - **Yüksek Performans & Çift Katmanlı Önbellek:** Bellek içi ve kalıcı disk TTL önbelleği (4s/24s), 250ms debounced arama ve asenkron ikon ön yükleme.
@@ -51,6 +55,9 @@ python3 scratch/verify_mixins.py
 
 # FlowBox Kararlılık ve Sıfır Titreme Testi
 python3 scratch/test_flowbox_stability.py
+
+# İleri Düzey Özellikler Testi (İzinler, ODRS, Güncellemeler, Mimari)
+python3 scratch/test_advanced_features.py
 ```
 
 ---

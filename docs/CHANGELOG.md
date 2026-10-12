@@ -6,6 +6,25 @@ Format, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardını t
 
 ---
 
+## [2.1.0] - 2026-10-12 (İzin Düzenleyici, ODRS Oylama, Flatpak Güncellemeleri & Mimari Rozetleri)
+
+### 🚀 Yeni Özellikler
+- **Gelişmiş İzin Düzenleyici (Permission Editor):**
+  - Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (İnternet, Ev Dizini, Kök Dizin, Wayland, X11, PulseAudio/Ses, Donanım/Kamera) arayüzdeki `Gtk.Switch` düğmeleriyle anlık olarak değiştirme (`flatpak override --user`).
+  - Uygulama bazlı geçersiz kılmaları algılama, değiştirme ve tek tıkla varsayılan sandbox izinlerine geri döndürme (`reset_permissions`).
+- **Canlı ODRS (Open Desktop Rating Service) Yorumları & Puanlama (`src/ODRSClient.py`):**
+  - `https://odrs.gnome.org` REST API entegrasyonu ile binlerce gerçek topluluk incelemesi ve 1-5 yıldızlı puan dağılımı.
+  - Ortalama yıldız puanı, toplam oy sayısı ve kullanıcının sistem diline (`user_locale`) göre önceliklendirilmiş kullanıcı yorumları.
+  - Çift katmanlı TTL disk önbelleği (puanlar 2 saat, yorumlar 1 saat).
+- **Sistem ve Flatpak Güncellemeleri Sekmesi:**
+  - `flatpak remote-ls --updates` motoru ile bekleyen tüm Flatpak güncellemelerini anında tarama.
+  - Güncelleme başlığına eklenen "Tümünü Güncelle" (Update All) butonu ile tüm bekleyen paketleri tek tıkla indirme ve kurma kuyruğuna alma.
+- **Mimarî Uyumluluk Rozetleri:**
+  - `FlathubClient.get_app_summary` üzerinden uygulamanın derlendiği mimarileri (`x86_64`, `aarch64`, `riscv64`) çekme ve detay sayfasında rozet olarak gösterme.
+  - Sistemin mevcut mimarisiyle eşleşen uygulamalarda "✓ Donanımınızla Tam Uyumlu" rozeti sunma.
+
+---
+
 ## [2.0.0] - 2026-10-12 (Pars Linux Fork & Flathub Entegrasyonu)
 
 ### 🚀 Yeni Özellikler & Modüler Mimari

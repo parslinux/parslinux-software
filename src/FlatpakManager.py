@@ -333,6 +333,264 @@ class FlatpakManager:
 
         return perms
 
+    def get_permission_overrides(self, app_id):
+        """
+        Returns active overrides and effective states for common sandbox permissions.
+        Key permissions: network, filesystem_home, filesystem_host, socket_x11, socket_wayland, socket_pulseaudio, device_all
+        """
+        if not self.is_available() or not app_id:
+            return {}
+
+        base_perms = self.get_permissions(app_id)
+        overrides_path = os.path.expanduser(f"~/.local/share/flatpak/overrides/{app_id}")
+        raw_overrides = ""
+        if os.path.exists(overrides_path):
+            try:
+                with open(overrides_path, "r", encoding="utf-8") as f:
+                    raw_overrides = f.read()
+            except Exception as e:
+                self.Logger.warning(f"Could not read overrides for {app_id}: {e}")
+
+        states = {
+            "network": {
+                "label": "İnternet Erişimi",
+                "icon": "network-transmit-receive-symbolic",
+                "default": bool(base_perms.get("network")),
+                "effective": bool(base_perms.get("network")),
+                "overridden": False,
+            },
+            "filesystem_home": {
+                "label": "Kullanıcı Ev Dizini (~/)",
+                "icon": "user-home-symbolic",
+                "default": "Kullanıcı Ev Dizini" in str(base_perms.get("filesystem", "")) or "Tam Sistem Erişimi" in str(base_perms.get("filesystem", "")),
+                "effective": "Kullanıcı Ev Dizini" in str(base_perms.get("filesystem", "")) or "Tam Sistem Erişimi" in str(base_perms.get("filesystem", "")),
+                "overridden": False,
+            },
+            "filesystem_host": {
+                "label": "Tüm Dosya Sistemi (/)",
+                "icon": "drive-harddisk-symbolic",
+                "default": "Tam Sistem Erişimi" in str(base_perms.get("filesystem", "")),
+                "effective": "Tam Sistem Erişimi" in str(base_perms.get("filesystem", "")),
+                "overridden": False,
+            },
+            "socket_wayland": {
+                "label": "Wayland Ekran Sunucusu",
+                "icon": "video-display-symbolic",
+                "default": "Wayland" in str(base_perms.get("display", "")),
+                "effective": "Wayland" in str(base_perms.get("display", "")),
+                "overridden": False,
+            },
+            "socket_x11": {
+                "label": "X11 Ekran Sunucusu",
+                "icon": "video-display-symbolic",
+                "default": "X11" in str(base_perms.get("display", "")),
+                "effective": "X11" in str(base_perms.get("display", "")),
+                "overridden": False,
+            },
+            "socket_pulseaudio": {
+                "label": "Ses Çıkışı ve Girişi",
+                "icon": "audio-volume-high-symbolic",
+                "default": bool(base_perms.get("audio")),
+                "effective": bool(base_perms.get("audio")),
+                "overridden": False,
+            },
+            "device_all": {
+                "label": "Kamera ve Donanım Aygıtları",
+                "icon": "camera-web-symbolic",
+                "default": bool(base_perms.get("devices")),
+                "effective": bool(base_perms.get("devices")),
+                "overridden": False,
+            },
+        }
+
+        if raw_overrides:
+            for line in raw_overrides.splitlines():
+                line = line.strip()
+                if line.startswith("shared="):
+                    if "!network" in line:
+                        states["network"]["effective"] = False
+                        states["network"]["overridden"] = True
+                    elif "network" in line:
+                        states["network"]["effective"] = True
+                        states["network"]["overridden"] = True
+                elif line.startswith("sockets="):
+                    if "!pulseaudio" in line:
+                        states["socket_pulseaudio"]["effective"] = False
+                        states["socket_pulseaudio"]["overridden"] = True
+                    elif "pulseaudio" in line:
+                        states["socket_pulseaudio"]["effective"] = True
+                        states["socket_pulseaudio"]["overridden"] = True
+                    if "!wayland" in line:
+                        states["socket_wayland"]["effective"] = False
+                        states["socket_wayland"]["overridden"] = True
+                    elif "wayland" in line:
+                        states["socket_wayland"]["effective"] = True
+                        states["socket_wayland"]["overridden"] = True
+                    if "!x11" in line:
+                        states["socket_x11"]["effective"] = False
+                        states["socket_x11"]["overridden"] = True
+                    elif "x11" in line:
+                        states["socket_x11"]["effective"] = True
+                        states["socket_x11"]["overridden"] = True
+                elif line.startswith("filesystems="):
+                    if "!home" in line:
+                        states["filesystem_home"]["effective"] = False
+                        states["filesystem_home"]["overridden"] = True
+                    elif "home" in line:
+                        states["filesystem_home"]["effective"] = True
+                        states["filesystem_home"]["overridden"] = True
+                    if "!host" in line:
+                        states["filesystem_host"]["effective"] = False
+                        states["filesystem_host"]["overridden"] = True
+                    elif "host" in line:
+                        states["filesystem_host"]["effective"] = True
+                        states["filesystem_host"]["overridden"] = True
+                elif line.startswith("devices="):
+                    if "!all" in line:
+                        states["device_all"]["effective"] = False
+                        states["device_all"]["overridden"] = True
+                    elif "all" in line:
+                        states["device_all"]["effective"] = True
+                        states["device_all"]["overridden"] = True
+
+        return states
+
+    def set_permission_override(self, app_id, permission_key, enable):
+        """
+        Configures user permission override using 'flatpak override --user'
+        """
+        if not self.is_available() or not app_id:
+            return False
+
+        flag_map = {
+            "network": "--share=network" if enable else "--unshare=network",
+            "filesystem_home": "--filesystem=home" if enable else "--nofilesystem=home",
+            "filesystem_host": "--filesystem=host" if enable else "--nofilesystem=host",
+            "socket_wayland": "--socket=wayland" if enable else "--nosocket=wayland",
+            "socket_x11": "--socket=x11" if enable else "--nosocket=x11",
+            "socket_pulseaudio": "--socket=pulseaudio" if enable else "--nosocket=pulseaudio",
+            "device_all": "--device=all" if enable else "--nodevice=all",
+        }
+
+        flag = flag_map.get(permission_key)
+        if not flag:
+            self.Logger.error(f"Unknown permission key: {permission_key}")
+            return False
+
+        cmd = [self.flatpak_bin, "override", "--user", flag, app_id]
+        try:
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+            if res.returncode == 0:
+                with self._lock:
+                    self._permissions_cache.pop(app_id, None)
+                self.Logger.info(f"Set permission {permission_key}={enable} for {app_id}")
+                return True
+            else:
+                self.Logger.error(f"Failed to set permission for {app_id}: {res.stderr}")
+                return False
+        except Exception as e:
+            self.Logger.exception(f"Error overriding permission: {e}")
+            return False
+
+    def reset_permissions(self, app_id):
+        """Resets all user permission overrides for the application"""
+        if not self.is_available() or not app_id:
+            return False
+
+        cmd = [self.flatpak_bin, "override", "--user", "--reset", app_id]
+        try:
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=10)
+            with self._lock:
+                self._permissions_cache.pop(app_id, None)
+            self.Logger.info(f"Reset permissions for {app_id}")
+            return res.returncode == 0
+        except Exception as e:
+            self.Logger.exception(f"Error resetting permissions for {app_id}: {e}")
+            return False
+
+    def get_upgradable_apps(self, force_refresh=False):
+        """
+        Scans remote repositories for pending Flatpak updates.
+        Returns dict: {app_id: {'candidate_version': ..., 'branch': ..., 'arch': ...}}
+        """
+        if not self.is_available():
+            return {}
+
+        if not force_refresh and hasattr(self, "_upgradable_cache") and self._upgradable_cache is not None:
+            return self._upgradable_cache
+
+        cmd = [
+            self.flatpak_bin,
+            "remote-ls",
+            "--updates",
+            "--app",
+            "--columns=application,version,branch,arch",
+        ]
+        env = dict(os.environ, LC_ALL="C")
+        try:
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=15, env=env)
+            upgradables = {}
+            if res.returncode == 0:
+                lines = res.stdout.strip().splitlines()
+                for line in lines:
+                    parts = [p.strip() for p in line.split("\t") if p.strip()]
+                    if not parts or len(parts) < 1:
+                        # Fallback split by whitespace if tab not used
+                        parts = line.split()
+                    if not parts:
+                        continue
+                    app_id = parts[0]
+                    if app_id in ("Application", "Application ID", "Uygulama Kimliği"):
+                        continue
+                    version = parts[1] if len(parts) > 1 else ""
+                    branch = parts[2] if len(parts) > 2 else "stable"
+                    arch = parts[3] if len(parts) > 3 else "x86_64"
+                    upgradables[app_id] = {
+                        "name": app_id,
+                        "candidate_version": version,
+                        "branch": branch,
+                        "arch": arch,
+                    }
+
+            with self._lock:
+                self._upgradable_cache = upgradables
+            self.Logger.info(f"Found {len(upgradables)} upgradable Flatpak apps: {list(upgradables.keys())}")
+            return upgradables
+        except Exception as e:
+            self.Logger.warning(f"Error checking Flatpak updates: {e}")
+            return {}
+
+    def is_upgradable(self, app_id):
+        """Returns True if the specified flatpak has a pending update"""
+        upgradables = self.get_upgradable_apps()
+        return app_id in upgradables
+
+    def update_all(self, progress_callback=None):
+        """
+        Updates all flatpak applications non-interactively.
+        """
+        if not self.is_available():
+            return False
+
+        cmd = [self.flatpak_bin, "update", "-y", "--noninteractive"]
+        try:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
+            for line in proc.stdout:
+                line = line.strip()
+                if not line:
+                    continue
+                if progress_callback:
+                    pct, msg = self.parse_progress(line)
+                    progress_callback(pct, msg)
+            proc.wait()
+            with self._lock:
+                self._upgradable_cache = None
+            self.refresh_installed()
+            return proc.returncode == 0
+        except Exception as e:
+            self.Logger.exception(f"Error updating flatpaks: {e}")
+            return False
+
     def launch(self, app_id):
         """Launch a flatpak application in the background"""
         cmd = [self.flatpak_bin, "run", app_id]
@@ -348,3 +606,4 @@ class FlatpakManager:
         except Exception as e:
             self.Logger.exception(f"Failed to launch {app_id}: {e}")
             return False
+

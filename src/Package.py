@@ -100,11 +100,19 @@ class Package(object):
             return None
 
     def is_upgradable(self, packagename):
+        if hasattr(self, "flatpak_manager") and self.flatpak_manager:
+            if self.flatpak_manager.is_upgradable(packagename):
+                return True
         try:
             package = self.cache[packagename]
             return package.is_upgradable
         except:
             return False
+
+    def get_upgradable_apps(self):
+        if hasattr(self, "flatpak_manager") and self.flatpak_manager:
+            return self.flatpak_manager.get_upgradable_apps()
+        return {}
 
     def missingdeps(self, packagename):
         package = self.cache[packagename]
