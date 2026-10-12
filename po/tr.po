@@ -539,16 +539,16 @@ msgid "Your suggest has been submitted for review."
 msgstr "Öneriniz incelemeye gönderildi."
 
 #: src/MainWindow.py:336 src/MainWindow.py:381
-msgid "Pardus Software Center"
-msgstr "Pardus Yazılım Merkezi"
+msgid "Pars Linux Software Center"
+msgstr "Pars Linux Yazılım Merkezi"
 
 #: src/MainWindow.py:340
-msgid "About Pardus Software Center"
-msgstr "Pardus Yazılım Merkezi Hakkında"
+msgid "About Pars Linux Software Center"
+msgstr "Pars Linux Yazılım Merkezi Hakkında"
 
 #: src/MainWindow.py:692
-msgid "Pardus Software Center | New version available"
-msgstr "Pardus Yazılım Merkezi | Yeni sürüm mevcut"
+msgid "Pars Linux Software Center | New version available"
+msgstr "Pars Linux Yazılım Merkezi | Yeni sürüm mevcut"
 
 #: src/MainWindow.py:693
 msgid "Please upgrade application"
@@ -1548,7 +1548,7 @@ msgstr "<span size='large'><b>Son Eklenen Uygulamalar</b></span>"
 #~ msgid "Write your comment"
 #~ msgstr "Yorumunuzu yazınız"
 
-#~ msgid "Pardus Software Center > Menu > Updates > Update Package Cache"
+#~ msgid "pars Software Center > Menu > Updates > Update Package Cache"
 #~ msgstr ""
 #~ "Pardus Yazılım Merkezi > Menü > Güncellemeler > Paket Önbelleğini Güncelle"
 

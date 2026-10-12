@@ -47,9 +47,22 @@ from Package import Package
 from Server import Server
 
 from AppImage import AppImage
-from AppDetail import AppDetail
-from AppRequest import AppRequest
-from GnomeComment import GnomeComment
+
+try:
+    from AppDetail import AppDetail
+except (ImportError, ValueError):
+    AppDetail = None
+
+try:
+    from AppRequest import AppRequest
+except (ImportError, ValueError):
+    AppRequest = None
+
+try:
+    from GnomeComment import GnomeComment
+except (ImportError, ValueError):
+    GnomeComment = None
+
 from UserSettings import UserSettings
 from Utils import Utils
 from Logger import Logger
@@ -549,14 +562,23 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
         self.AppImage = AppImage()
         self.AppImage.app_image_from_server = self.app_image_from_server
 
-        self.AppDetail = AppDetail()
-        self.AppDetail.app_details_from_server = self.app_details_from_server
+        if AppDetail:
+            self.AppDetail = AppDetail()
+            self.AppDetail.app_details_from_server = self.app_details_from_server
+        else:
+            self.AppDetail = None
 
-        self.AppRequest = AppRequest()
-        self.AppRequest.rating_response_from_server = self.rating_response_from_server
+        if AppRequest:
+            self.AppRequest = AppRequest()
+            self.AppRequest.rating_response_from_server = self.rating_response_from_server
+        else:
+            self.AppRequest = None
 
-        self.GnomeComment = GnomeComment()
-        self.GnomeComment.gnome_comments_from_server = self.gnome_comments_from_server
+        if GnomeComment:
+            self.GnomeComment = GnomeComment()
+            self.GnomeComment.gnome_comments_from_server = self.gnome_comments_from_server
+        else:
+            self.GnomeComment = None
 
         
 

@@ -1,9 +1,8 @@
-parslinux-software (2.0.0) unstable; urgency=medium
+parslinux-software (2.3.0) unstable; urgency=medium
 
+  * Release 2.3.0: Full Flathub REST API v2 and Flatpak architecture.
+  * Added permission editor, ODRS reviews, repo manager, multi-sorting, offline mode, and touchpad gestures.
   * Forked and rebranded to Pars Linux Software Center.
-  * Switched backend architecture to Flathub REST API v2 and Flatpak.
-  * Removed legacy Pardus server dependencies and unused comments service.
-  * Updated application ID to org.parslinux.software.
 
  -- Pars Linux Developers <dev@parslinux.org>  Mon, 12 Oct 2026 13:00:00 +0300
 

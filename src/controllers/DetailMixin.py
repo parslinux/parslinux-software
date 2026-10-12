@@ -1034,7 +1034,7 @@ class DetailMixin:
             GLib.idle_add(self.ui_ad_comments_flowbox.show_all)
 
             if response_comment_len != self.comment_limit:
-                if self.UserSettings.config_gnome_comments:
+                if self.UserSettings.config_gnome_comments and getattr(self, "GnomeComment", None):
                     self.ui_ad_more_comment_button.name = "gnome"
                     gdic = {"user_hash": "0000000000000000000000000000000000000000",
                             "app_id": self.get_gnome_desktop_filename_from_app_name(self.ui_app_name),
@@ -1072,10 +1072,11 @@ class DetailMixin:
             self.comment_limit = self.comment_limit + 10
         elif button.name == "gnome":
             self.gnome_comment_limit = self.gnome_comment_limit + 10
-            gdic = {"user_hash": "0000000000000000000000000000000000000000",
-                    "app_id": self.get_gnome_desktop_filename_from_app_name(self.ui_app_name),
-                    "locale": self.user_locale, "distro": "Pars Linux", "version": "unknown", "limit": self.gnome_comment_limit}
-            self.GnomeComment.get_comments(self.Server.gnomecommentserver, gdic, self.ui_app_name)
+            if getattr(self, "GnomeComment", None):
+                gdic = {"user_hash": "0000000000000000000000000000000000000000",
+                        "app_id": self.get_gnome_desktop_filename_from_app_name(self.ui_app_name),
+                        "locale": self.user_locale, "distro": "Pars Linux", "version": "unknown", "limit": self.gnome_comment_limit}
+                self.GnomeComment.get_comments(self.Server.gnomecommentserver, gdic, self.ui_app_name)
 
     def create_comment_widget(self, comment, gnome=False):
         if not gnome:

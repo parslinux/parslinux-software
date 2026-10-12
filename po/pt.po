@@ -1,11 +1,11 @@
-# Portuguese translation for pardus-software.
+# Portuguese translation for parss-software.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the pardus-software package.
+# This file is distributed under the same license as the parss-software package.
 # Hugo Carvalho <hugokarvalho@hotmail.com>, 2022, 2023, 2024, 2025, 2026.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: pardus-software\n"
+"Project-Id-Version: pars-software\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-02-24 14:55+0300\n"
 "PO-Revision-Date: 2026-03-30 22:42+0100\n"
@@ -348,9 +348,9 @@ msgid ""
 msgstr "Pode seguir as instruções olhando para o resultado do terminal abaixo."
 
 #: ui/MainWindow.glade:5403
-msgid "You can ask for help about your problem through Pardus help channels."
+msgid "You can ask for help about your problem through parss help channels."
 msgstr ""
-"Pode pedir ajuda sobre o seu problema através dos canais de ajuda do Pardus."
+"Pode pedir ajuda sobre o seu problema através dos canais de ajuda do parss."
 
 #: ui/MainWindow.glade:5525
 msgid "Search for apps"
@@ -361,8 +361,8 @@ msgid "Auto apt update in progress."
 msgstr "Atualização automática em curso."
 
 #: ui/MainWindow.glade:5620
-msgid "Pardus Store"
-msgstr "Loja do Pardus"
+msgid "parss Store"
+msgstr "Loja do parss"
 
 #: ui/MainWindow.glade:5688
 msgid "Install, remove, update applications"
@@ -420,11 +420,11 @@ msgstr "Aviso legal"
 
 #: ui/MainWindow.glade:6669
 msgid ""
-"This application served from Pardus non-free package repositories, so that "
+"This application served from parss non-free package repositories, so that "
 "the OS has nothing to do with the health of the application."
 msgstr ""
 "Esta aplicação é fornecida a partir de repositórios de pacotes não-livres do "
-"Pardus, pelo que o sistema operativo não tem qualquer influência no bom "
+"parss, pelo que o sistema operativo não tem qualquer influência no bom "
 "funcionamento da aplicação."
 
 #: ui/MainWindow.glade:6891
@@ -538,16 +538,16 @@ msgid "Your suggest has been submitted for review."
 msgstr "A sua sugestão foi enviada para análise."
 
 #: src/MainWindow.py:336 src/MainWindow.py:381
-msgid "Pardus Software Center"
-msgstr "Centro de Software Pardus"
+msgid "parss Software Center"
+msgstr "Centro de Software parss"
 
 #: src/MainWindow.py:340
-msgid "About Pardus Software Center"
-msgstr "Acerca do Centro de Software Pardus"
+msgid "About parss Software Center"
+msgstr "Acerca do Centro de Software parss"
 
 #: src/MainWindow.py:692
-msgid "Pardus Software Center | New version available"
-msgstr "Centro de Software Pardus | Nova versão disponível"
+msgid "parss Software Center | New version available"
+msgstr "Centro de Software parss | Nova versão disponível"
 
 #: src/MainWindow.py:693
 msgid "Please upgrade application"

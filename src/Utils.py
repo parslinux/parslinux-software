@@ -20,7 +20,10 @@ class Utils(object):
             "mate": ["mate-about", "--version"],
             "kde": ["plasmashell", "--version"],
             "lxqt": ["lxqt-about", "--version"],
-            "budgie": ["budgie-desktop", "--version"]
+            "budgie": ["budgie-desktop", "--version"],
+            "cosmic": ["cosmic-session", "--version"],
+            "hyprland": ["hyprctl", "version"],
+            "sway": ["sway", "--version"]
         }
         self.Logger = Logger(__name__)
 
@@ -59,8 +62,17 @@ class Utils(object):
                     if "GNOME Shell" in line:
                         return line.split()[-1]
 
-            elif desktop_key in ("cinnamon", "mate", "kde"):
+            elif desktop_key in ("cinnamon", "mate", "kde", "cosmic"):
                 return output.split()[-1]
+
+            elif desktop_key == "hyprland":
+                for line in output.splitlines():
+                    if "Tag:" in line:
+                        return line.split("Tag:")[-1].strip()
+                return output.splitlines()[0].strip() if output else ""
+
+            elif desktop_key == "sway":
+                return output.splitlines()[0].strip().split()[-1] if output else ""
 
             elif desktop_key == "lxqt":
                 for line in output.splitlines():
