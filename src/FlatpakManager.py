@@ -607,3 +607,117 @@ class FlatpakManager:
             self.Logger.exception(f"Failed to launch {app_id}: {e}")
             return False
 
+    def get_remotes(self):
+        """
+        List all configured Flatpak remotes (sources).
+        Returns list of dicts: [{'name': ..., 'title': ..., 'url': ..., 'scope': 'user'|'system', 'disabled': bool}]
+        """
+        if not self.is_available():
+            return []
+
+        cmd = [self.flatpak_bin, "remotes", "--columns=name,title,url,options"]
+        env = os.environ.copy()
+        env["LC_ALL"] = "C"
+
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=10)
+            if res.returncode != 0:
+                return []
+
+            remotes = []
+            for line in res.stdout.strip().splitlines():
+                parts = line.split("\t")
+                if not parts or not parts[0].strip():
+                    continue
+                name = parts[0].strip()
+                title = parts[1].strip() if len(parts) > 1 and parts[1].strip() else name
+                url = parts[2].strip() if len(parts) > 2 else ""
+                options = parts[3].strip().lower() if len(parts) > 3 else ""
+
+                scope = "user" if "user" in options else "system"
+                disabled = "disabled" in options or "no-enumerate" in options
+
+                remotes.append({
+                    "name": name,
+                    "title": title,
+                    "url": url,
+                    "scope": scope,
+                    "disabled": disabled,
+                })
+            return remotes
+        except Exception as e:
+            self.Logger.exception(f"Error fetching flatpak remotes: {e}")
+            return []
+
+    def add_remote(self, name, url, is_user=True):
+        """
+        Add a new Flatpak remote repository.
+        Returns (success: bool, message: str)
+        """
+        if not self.is_available():
+            return False, "Flatpak kurulu değil."
+
+        name = (name or "").strip()
+        url = (url or "").strip()
+        if not name or not url:
+            return False, "Depo adı ve adresi boş olamaz."
+
+        cmd = [self.flatpak_bin, "remote-add", "--user" if is_user else "--system", "--if-not-exists"]
+        if url.endswith(".flatpakrepo"):
+            cmd.append("--from")
+        cmd.extend([name, url])
+
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            if res.returncode == 0:
+                self.Logger.info(f"Successfully added flatpak remote {name} -> {url}")
+                return True, "Depo başarıyla eklendi."
+            else:
+                err = res.stderr.strip() or res.stdout.strip()
+                self.Logger.warning(f"Failed to add remote {name}: {err}")
+                return False, err
+        except Exception as e:
+            self.Logger.exception(f"Exception adding remote {name}: {e}")
+            return False, str(e)
+
+    def remove_remote(self, name, is_user=True):
+        """
+        Delete a configured Flatpak remote repository.
+        Returns (success: bool, message: str)
+        """
+        if not self.is_available():
+            return False, "Flatpak kurulu değil."
+
+        name = (name or "").strip()
+        if not name:
+            return False, "Depo adı geçersiz."
+
+        cmd = [self.flatpak_bin, "remote-delete", "--user" if is_user else "--system", "-y", name]
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+            if res.returncode == 0:
+                self.Logger.info(f"Successfully removed remote {name}")
+                return True, "Depo başarıyla kaldırıldı."
+            else:
+                err = res.stderr.strip() or res.stdout.strip()
+                return False, err
+        except Exception as e:
+            self.Logger.exception(f"Exception removing remote {name}: {e}")
+            return False, str(e)
+
+    def toggle_remote(self, name, enable=True, is_user=True):
+        """
+        Enable or disable a Flatpak remote.
+        """
+        if not self.is_available():
+            return False, "Flatpak kurulu değil."
+
+        cmd = [self.flatpak_bin, "remote-modify", "--user" if is_user else "--system",
+               "--no-disable" if enable else "--disable", name]
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
+            return res.returncode == 0
+        except Exception as e:
+            self.Logger.exception(f"Exception toggling remote {name}: {e}")
+            return False
+

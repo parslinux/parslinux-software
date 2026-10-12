@@ -15,10 +15,10 @@ class InstalledMixin:
     """Kurulu uygulamalar (MyApps), güncellemeler ve disk kullanımı hesaplama mixin'i."""
 
     def get_upgradables(self):
-        if not self.Server.connection:
+        if not getattr(self, "apps", None) and not hasattr(self, "Package"):
             return
         self.upgradables = {}
-        for app, details in self.apps.items():
+        for app, details in getattr(self, "apps", {}).items():
             is_installed = self.Package.isinstalled(app)
             is_upgradable = self.Package.is_upgradable(app)
 
@@ -31,7 +31,7 @@ class InstalledMixin:
                 flatpak_upgradables = self.Package.get_upgradable_apps()
                 for fp_id, fp_info in flatpak_upgradables.items():
                     if fp_id not in self.upgradables:
-                        details = self.apps.get(fp_id)
+                        details = getattr(self, "apps", {}).get(fp_id)
                         if not details:
                             details = {
                                 "name": fp_id,
@@ -72,8 +72,6 @@ class InstalledMixin:
             self.action_package(first["name"], first["command"], first["desktop_id"], first["upgrade"])
 
     def set_upgradables(self):
-        if not self.Server.connection:
-            return
         self.Logger.info("in set_upgradables")
 
         GLib.idle_add(lambda: (self.ui_upgradableapps_flowbox and self.ui_upgradableapps_flowbox.foreach(

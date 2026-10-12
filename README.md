@@ -11,7 +11,9 @@ Pars Linux Yazılım Merkezi, modern Flatpak ekosistemini temel alarak evrensel 
 - **Flathub REST API v2 & Meilisearch:** Binlerce güncel uygulamayı popüler, trend, kategori ve canlı arama desteğiyle sunar.
 - **Evrensel Flatpak Yönetimi:** Tek tıkla kurma, kaldırma, güncelleme ve doğrudan masaüstünde bağımsız süreçte başlatma.
 - **Gelişmiş İzin Düzenleyici (Permission Editor):** Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (Ağ, Dosya Sistemi, Ekran, Ses, Donanım) arayüzden doğrudan açıp kapatabilme (`flatpak override --user`) ve sıfırlama.
-- **Canlı ODRS Yorumları & Puanlama:** Open Desktop Rating Service (`odrs.gnome.org`) üzerinden 1-5 yıldız oylama dağılımları ve topluluk incelemeleri.
+- **Canlı ODRS Yorumları & Puan Gönderme:** Open Desktop Rating Service (`odrs.gnome.org`) üzerinden topluluk incelemeleri ve doğrudan detay sayfasından yıldızlı puan/yorum gönderebilme.
+- **Flatpak Depo (Remote) Yönetimi:** Ayarlar ekranından sistem ve kullanıcı depolarını listeleme, Flathub Beta, GNOME Nightly veya özel adresle yeni depo ekleme ve yönetme.
+- **Gelişmiş Çevrimdışı Mod (Offline Mode):** İnternet olmadığında önbellek ile kesintisiz açılış, yerel arama fallback'i, bilgi çubuğu bildirimi ve yüklü uygulamalara tam erişim.
 - **Sistem ve Flatpak Güncellemeleri:** Bekleyen güncellemeleri anlık tespit edip tek tıkla topluca güncelleyen "Tümünü Güncelle" paneli.
 - **Mimarî Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU desteği ile donanım uyumluluk rozetleri.
 - **Modüler Denetleyici Mimarisi (`src/controllers/`):** Bakımı kolaylaştıran 6 bağımsız mixin yapısı (Slider, Galeri, Arama & Kategori, Detay, Kuyruk ve Yüklü Uygulamalar).

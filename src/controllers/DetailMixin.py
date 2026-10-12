@@ -764,9 +764,6 @@ class DetailMixin:
 
         self.ODRSClient.fetch_feedback_async(app_name, _on_feedback, user_locale=getattr(self, "user_locale", "tr"))
 
-
-        threading.Thread(target=_fetch_and_render, daemon=True).start()
-
     def app_detail_requireds_thread(self, app):
         app_detail_requireds = self.app_detail_requireds_worker(app)
         GLib.idle_add(self.app_detail_requireds_worker_done, app_detail_requireds)
@@ -1211,23 +1208,40 @@ class DetailMixin:
         author = self.ui_comment_fullname_entry.get_text().strip()
         start, end = self.ui_comment_content_textbuffer.get_bounds()
         comment = self.ui_comment_content_textbuffer.get_text(start, end, False).strip()
-        value = self.comment_star_point
+        value = getattr(self, "comment_star_point", 5)
         if value == 0 or comment == "" or author == "":
             self.ui_comment_error_label.set_visible(True)
             self.ui_comment_error_label.set_text(_("All fields must be filled."))
-        else:
-            version = self.Package.installed_version(self.ui_app_name)
-            if version is None:
-                version = ""
-            dic = {"mac": self.mac, "author": author, "comment": comment, "value": value, "app": self.ui_app_name,
-                   "installed": True, "appversion": version, "distro": self.user_distro_full,
-                   "justrate": False}
-            try:
-                self.AppRequest.send(self.Server.serverurl + self.Server.serversendrate, dic, self.ui_app_name)
-                self.ui_comment_send_button.set_sensitive(False)
-            except Exception as e:
+            return
+
+        self.ui_comment_error_label.set_visible(False)
+        self.ui_comment_send_button.set_sensitive(False)
+
+        if not hasattr(self, "ODRSClient") or self.ODRSClient is None:
+            self.ODRSClient = ODRSClient()
+
+        app_name = getattr(self, "ui_app_name", "")
+        summary = comment.split("\n")[0][:60]
+
+        def _on_submit_done(success, msg):
+            self.ui_comment_send_button.set_sensitive(True)
+            if success:
+                self.ui_comment_dialog.hide()
+                self.notify(_("Review Submitted"), _("Thank you! Your review has been submitted to ODRS."))
+                if app_name:
+                    self.load_odrs_ratings_and_reviews(app_name)
+            else:
                 self.ui_comment_error_label.set_visible(True)
-                self.ui_comment_error_label.set_text(f"{e}")
+                self.ui_comment_error_label.set_text(msg)
+
+        self.ODRSClient.submit_review_async(
+            app_id=app_name,
+            rating_stars=value,
+            summary=summary,
+            description=comment,
+            user_display=author,
+            callback=_on_submit_done
+        )
 
     def on_ui_comment_content_textbuffer_insert_text(self, buffer, location, text, length):
         max_chars = 500

@@ -4,6 +4,22 @@ Pars Linux Yazılım Merkezi projesindeki tüm önemli değişiklikler, yenilikl
 
 Format, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardını temel alır ve [Semantik Sürümleme](https://semver.org/spec/v2.0.0.html) ilkelerine uyar.
 
+## [2.2.0] - 2026-10-12 (Çevrimdışı Mod, ODRS Yorum Gönderme ve Flatpak Depo Yönetimi)
+
+### 🚀 Yeni Özellikler
+- **Gelişmiş Çevrimdışı Mod (Offline Mode):**
+  - İnternet erişimi olmadığında veya sunucuya erişilemediğinde diskteki `api_cache/` verileri üzerinden kesintisiz başlatma.
+  - Ağ olmadığında koleksiyon önbellekleri (`popular_*.json`, `cat_*.json`) üzerinde çalışan yerel arama motoru (`FlathubClient._search_offline_cache`).
+  - Ana ekranda durum bildiren yerel GTK uyarı çubuğu (`Gtk.InfoBar`), kurulu uygulamalara ve güncellemelere çevrimdışıyken engelsiz erişim.
+- **Kullanıcı İncelemesi ve Puan Gönderme (`src/ODRSClient.py` & `src/controllers/DetailMixin.py`):**
+  - Doğrudan uygulama detay sayfasındaki "Yorum Yaz & Puan Ver" butonu ve interaktif form üzerinden ODRS v1 API (`https://odrs.gnome.org/1.0/reviews/api/app/{app_id}`) entegrasyonu.
+  - `/etc/machine-id` veya sistem kimliği üzerinden SHA1 karma ile gizlilik dostu ve anonim `user_hash` tekillik doğrulaması.
+  - Gönderim sonrasında yerel önbellek temizliği ve yeni yorumların anlık olarak listelenmesi.
+- **Flatpak Depo (Remote) Yönetimi (`src/FlatpakManager.py` & `src/MainWindow.py`):**
+  - Ayarlar panelinde kurulu sistem ve kullanıcı Flatpak depolarının (remotes) listelenmesi.
+  - Hazır şablonlar (Flathub Resmi, Flathub Beta, GNOME Nightly) veya özel `.flatpakrepo` URL'si ile tek tıkla yeni depo ekleme iletişim kutusu.
+  - Onay korumalı depo silme (`remove_remote`) ve etkinleştirme/devre dışı bırakma eylemleri.
+
 ---
 
 ## [2.1.0] - 2026-10-12 (İzin Düzenleyici, ODRS Oylama, Flatpak Güncellemeleri & Mimari Rozetleri)

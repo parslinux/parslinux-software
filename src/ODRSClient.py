@@ -14,6 +14,7 @@ import urllib.error
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
+import hashlib
 import gi
 gi.require_version("GLib", "2.0")
 from gi.repository import GLib
@@ -188,13 +189,84 @@ class ODRSClient:
             return cached
         return []
 
-    def fetch_feedback_async(self, app_id, callback, user_locale="tr"):
+    def _get_user_hash(self):
+        """Generate anonymous machine/user SHA1 hash for ODRS vote deduplication"""
+        seed = ""
+        for path in ("/etc/machine-id", "/var/lib/dbus/machine-id"):
+            if os.path.exists(path):
+                try:
+                    with open(path, "r", encoding="utf-8") as f:
+                        seed = f.read().strip()
+                        if seed:
+                            break
+                except Exception:
+                    pass
+        if not seed:
+            seed = os.environ.get("USER", "parslinux-user")
+        return hashlib.sha1(f"parslinux_{seed}".encode("utf-8")).hexdigest()
+
+    def submit_review(self, app_id, rating_stars, summary, description, user_display=None):
         """
-        Asynchronously fetches both ratings and reviews, then calls callback(ratings, reviews) via GLib.idle_add.
+        Submit a new review to ODRS.
+        rating_stars: int 1-5
+        Returns (success: bool, message: str)
+        """
+        if not app_id:
+            return False, "Uygulama kimliği eksik."
+
+        score = max(1, min(5, int(rating_stars))) * 20
+        user_hash = self._get_user_hash()
+        display_name = (user_display or "").strip() or "Pars Linux Kullanıcısı"
+
+        payload = {
+            "user_hash": user_hash,
+            "user_display": display_name,
+            "summary": (summary or "").strip(),
+            "description": (description or "").strip(),
+            "rating": score,
+            "version": "1.0",
+            "distro": "Pars Linux",
+        }
+
+        url = f"{ODRS_BASE_URL}/app/{app_id}"
+        req_data = json.dumps(payload).encode("utf-8")
+        headers = {
+            "User-Agent": USER_AGENT,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        }
+
+        try:
+            req = urllib.request.Request(url, data=req_data, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status in (200, 201):
+                    # Invalidate local review cache for app_id
+                    cache_key = f"reviews_{app_id.lower()}"
+                    path = os.path.join(self.cache_dir, f"{cache_key}.json")
+                    if os.path.exists(path):
+                        try:
+                            os.remove(path)
+                        except Exception:
+                            pass
+                    self.Logger.info(f"ODRS review submitted successfully for {app_id}")
+                    return True, "Yorumunuz başarıyla gönderildi."
+                else:
+                    return False, f"Sunucu yanıtı: {resp.status}"
+        except urllib.error.HTTPError as e:
+            msg = f"HTTP {e.code}: {e.reason}"
+            self.Logger.warning(f"ODRS submit failed: {msg}")
+            return False, msg
+        except Exception as e:
+            self.Logger.exception(f"ODRS submit exception: {e}")
+            return False, str(e)
+
+    def submit_review_async(self, app_id, rating_stars, summary, description, user_display=None, callback=None):
+        """
+        Asynchronously submits review to ODRS and calls callback(success: bool, message: str) on GLib main thread.
         """
         def _worker():
-            ratings = self.get_ratings(app_id)
-            reviews = self.get_reviews(app_id, user_locale=user_locale)
-            GLib.idle_add(callback, ratings, reviews)
+            success, msg = self.submit_review(app_id, rating_stars, summary, description, user_display)
+            if callback:
+                GLib.idle_add(callback, success, msg)
 
         self.executor.submit(_worker)

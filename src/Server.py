@@ -67,6 +67,7 @@ class Server(object):
 
         self.flathub = FlathubClient(self.cachedir)
         self.is_flathub = True
+        self.is_offline = False
         self._cached_startup_apps = None
 
     def get_hashes(self, url):
@@ -75,20 +76,27 @@ class Server(object):
             def _flathub_hashes():
                 ok = self.flathub.check_connection()
                 self.connection = ok
-                if ok:
-                    dummy_md5 = {
-                        "md5": {
-                            "apps": "flathub_apps",
-                            "cats": "flathub_cats",
-                            "icons": "flathub_icons",
-                            "images": "flathub_images",
-                            "home": "flathub_home",
-                        }
+                dummy_md5 = {
+                    "md5": {
+                        "apps": "flathub_apps",
+                        "cats": "flathub_cats",
+                        "icons": "flathub_icons",
+                        "images": "flathub_images",
+                        "home": "flathub_home",
                     }
+                }
+                if ok:
+                    self.is_offline = False
                     GLib.idle_add(self.ServerHashesCB, True, dummy_md5)
                 else:
-                    self.error_message = "Flathub sunucusuna ulaşılamadı."
-                    GLib.idle_add(self.ServerHashesCB, False)
+                    has_cache = self.flathub.has_offline_cache()
+                    if has_cache:
+                        self.is_offline = True
+                        self.Logger.info("Flathub unreachable but offline cache exists. Starting in Offline Mode.")
+                        GLib.idle_add(self.ServerHashesCB, True, dummy_md5)
+                    else:
+                        self.error_message = "Flathub sunucusuna ulaşılamadı ve çevrimdışı önbellek bulunamadı."
+                        GLib.idle_add(self.ServerHashesCB, False)
 
             threading.Thread(target=_flathub_hashes, daemon=True).start()
             return

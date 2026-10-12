@@ -101,10 +101,26 @@ class FlathubClient:
             self.Logger.exception(f"Flathub Request Error for {url}: {e}")
         return None
 
+    def has_offline_cache(self):
+        """Check if we have cached popular or category apps on disk"""
+        try:
+            if not os.path.exists(self.api_cache_dir):
+                return False
+            for fname in os.listdir(self.api_cache_dir):
+                if (fname.startswith("popular_") or fname.startswith("trending_") or fname.startswith("cat_")) and fname.endswith(".json"):
+                    path = os.path.join(self.api_cache_dir, fname)
+                    if os.path.getsize(path) > 100:
+                        return True
+        except Exception:
+            pass
+        return False
+
     def check_connection(self):
         """Check if Flathub API is reachable"""
-        res = self._request("/collection/popular", timeout=5)
-        return res is not None and "hits" in res
+        res = self._request("/collection/popular", timeout=4)
+        ok = res is not None and "hits" in res
+        self.is_offline = not ok
+        return ok
 
     def get_popular(self, limit=50):
         """Fetch popular apps list with 4-hour disk TTL cache"""
@@ -238,7 +254,7 @@ class FlathubClient:
         return []
 
     def search(self, query, limit=40):
-        """Search apps on Flathub with in-memory session cache"""
+        """Search apps on Flathub with in-memory session cache and offline fallback"""
         if not query or not query.strip():
             return []
         q_norm = query.strip().lower()
@@ -247,7 +263,10 @@ class FlathubClient:
             if q_norm in self._search_mem_cache:
                 return self._search_mem_cache[q_norm]
 
-        res = self._request("/search", data={"query": q_norm}, method="POST")
+        res = None
+        if not getattr(self, "is_offline", False):
+            res = self._request("/search", data={"query": q_norm}, method="POST", timeout=6)
+
         if res and "hits" in res:
             hits = res["hits"][:limit] if limit else res["hits"]
             apps = [self.adapt_app_hit(h) for h in hits]
@@ -255,7 +274,44 @@ class FlathubClient:
             with self._mem_lock:
                 self._search_mem_cache[q_norm] = apps
             return apps
-        return []
+
+        # Offline local search fallback: search across cached files
+        apps = self._search_offline_cache(q_norm, limit=limit)
+        with self._mem_lock:
+            self._search_mem_cache[q_norm] = apps
+        return apps
+
+    def _search_offline_cache(self, q_norm, limit=40):
+        """Search within locally cached app entries when offline"""
+        matched_hits = {}
+        try:
+            if not os.path.exists(self.api_cache_dir):
+                return []
+            for fname in os.listdir(self.api_cache_dir):
+                if (fname.startswith("popular_") or fname.startswith("trending_") or fname.startswith("cat_")) and fname.endswith(".json"):
+                    path = os.path.join(self.api_cache_dir, fname)
+                    try:
+                        with open(path, "r", encoding="utf-8") as f:
+                            data = json.load(f)
+                        hits = data.get("hits", []) if isinstance(data, dict) else []
+                        for h in hits:
+                            app_id = (h.get("app_id") or h.get("id") or "").lower()
+                            name = (h.get("name") or "").lower()
+                            summary = (h.get("summary") or "").lower()
+                            if q_norm in name or q_norm in summary or q_norm in app_id:
+                                if app_id not in matched_hits:
+                                    matched_hits[app_id] = h
+                                    if len(matched_hits) >= limit:
+                                        break
+                    except Exception:
+                        continue
+                if len(matched_hits) >= limit:
+                    break
+        except Exception as e:
+            self.Logger.warning(f"Error during offline search: {e}")
+
+        apps = [self.adapt_app_hit(h) for h in matched_hits.values()]
+        return apps
 
     def get_appstream(self, app_id):
         """Fetch detailed appstream metadata with 24-hour disk TTL cache"""

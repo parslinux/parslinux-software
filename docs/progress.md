@@ -16,6 +16,7 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 | **Faz 6** | Performans & 0ms Sıfır Titreme (Zero-Flicker) FlowBox | ✅ Tamamlandı (%100) |
 | **Faz 7** | Özel FreeDesktop Kategori İkonları & Çift Erişimli Ayarlar | ✅ Tamamlandı (%100) |
 | **Faz 8** | Gelişmiş İzin Yönetimi (Flatseal Benzeri), Canlı ODRS & Mimari Rozetleri | ✅ Tamamlandı (%100) |
+| **Faz 9** | Çevrimdışı Mod İyileştirmeleri, ODRS Yorum Gönderme & Flatpak Depo Yönetimi | ✅ Tamamlandı (%100) |
 
 ---
 
@@ -32,21 +33,24 @@ Pars Linux Yazılım Merkezi'nin güncel gelişim durumu, tamamlanan aşamalar v
 - [x] **Flatpak Paket Yönetimi:** Kurulu uygulamaları listeleme, kurma, kaldırma, güncelleme ve bağımsız süreçte başlatma.
 - [x] **Gelişmiş İzin Düzenleyici (Permission Editor):** Flatseal benzeri, kurulu Flatpak uygulamalarının izinlerini (Ağ, Dosya Sistemi, Ekran, Ses, Kamera vb.) kullanıcı arayüzünden doğrudan açıp kapatabilme (`flatpak override --user`) ve varsayılana sıfırlama.
 - [x] **Canlı ODRS (Open Desktop Rating Service) Yorumları & Puanlama:** `odrs.gnome.org` üzerinden 1-5 yıldızlı topluluk oylamaları, ortalama puanlar ve yerel kullanıcı yorumlarının detay sayfasında asenkron listelenmesi (`ODRSClient.py`).
+- [x] **ODRS İnceleme & Puan Gönderme:** Kullanıcıların detay sayfasından doğrudan puan (1-5 yıldız), başlık ve yorum yazıp ODRS sunucusuna anonim donanım hash'i ile gönderebilmesi (`ODRSClient.submit_review_async`).
 - [x] **Sistem ve Flatpak Güncellemeleri:** Bekleyen Flatpak güncellemelerinin anlık algılanması (`flatpak remote-ls --updates`) ve tek tıkla topluca güncellenmesini sağlayan "Tümünü Güncelle" arayüz butonu.
 - [x] **Mimarî Uyumluluk Rozetleri:** Uygulamanın `x86_64`, `aarch64` (ARM64) ve `riscv64` CPU mimari desteğinin detay sayfasında rozet olarak gösterilmesi ve "Donanımınızla Tam Uyumlu" doğrulama rozeti.
+- [x] **Gelişmiş Çevrimdışı Mod (Offline Mode):** Ağ bağlantısı kesildiğinde diskteki `api_cache/` verileriyle sorunsuz çalışma, yerel arama fallback'i, ana ekranda `Gtk.InfoBar` çevrimdışı uyarı çubuğu ve kurulu uygulamalara kesintisiz erişim.
+- [x] **Flatpak Depo (Remote) Yönetimi:** Ayarlar ekranında sistem ve kullanıcı Flatpak depolarının listelenmesi, hazır şablonlar (Flathub Beta, GNOME Nightly, Resmi Flathub) veya özel adresle yeni depo ekleme ve güvenli depo kaldırma/devre dışı bırakma.
 - [x] **Arch Linux & Pars Linux Uyumluluğu:** `python3-apt` zorunluluğunun kaldırılarak sistem bağımsız hale getirilmesi.
 - [x] **Dinamik Kategori Gezintisi:** Sol menüdeki kategorilere tıklandığında anlık Flathub yüklemesi.
 - [x] **Gelişmiş Detay Sayfası:** Ekran görüntüleri, geliştirici bilgisi, lisans, temizlenmiş açıklamalar ve eylem butonları.
-- [x] **Otomatik Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`), başsız GTK testi (`test_mainwindow_headless.py`) ve ileri düzey özellikler testi (`test_advanced_features.py`).
+- [x] **Otomatik Test Paketi:** Mixin doğrulama (`verify_mixins.py`), FlowBox kararlılık testi (`test_flowbox_stability.py`), başsız GTK testi (`test_mainwindow_headless.py`), ileri düzey özellikler testi (`test_advanced_features.py`) ve Faz 9 entegrasyon testleri (`test_phase9_features.py`).
 
 ---
 
-## 🎯 Gelecek Yol Haritası (Faz 9 ve Sonrası)
+## 🎯 Gelecek Yol Haritası (Faz 10 ve Sonrası)
 
-1. **Çevrimdışı Mod İyileştirmeleri:**
-   - İnternet bağlantısı kesildiğinde önbelleğe alınmış Flathub verileriyle gezinmeye devam edebilme.
-2. **Kullanıcı İncelemesi Gönderme:**
-   - ODRS API üzerinden doğrudan yazılım merkezi içinden yeni yorum ve puan gönderebilme.
-3. **Flatpak Depo (Remote) Yönetimi:**
-   - Kullanıcıların özel Flatpak repolarını (Flathub Beta, yerel depolar) arayüzden ekleyip kaldırabilmesi.
+1. **İndirme ve Güncelleme Bildirimleri İyileştirmesi:**
+   - Masaüstü bildirimleri üzerinden doğrudan uygulamayı başlatma veya güncelleme loglarını görüntüleme.
+2. **Kategoriye Özel Çoklu Sıralama:**
+   - Flathub API'sindeki son güncellenenler, en çok indirilenler ve ada göre filtreleme kriterlerinin arayüze eklenmesi.
+3. **Wayland Dokunmatik Ekran ve Jest Desteği:**
+   - Dokunmatik ekranlı dizüstü bilgisayarlar ve tabletler için FlowBox ve Slider üzerinde kaydırma hareketleri (swipe gestures).
 

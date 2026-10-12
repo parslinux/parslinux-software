@@ -906,7 +906,37 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
 
         self.Logger.info("server func done")
 
+    def update_offline_banner(self):
+        is_offline = getattr(self.Server, "is_offline", False) or not self.Server.connection
+        ui_home_box = getattr(self, "ui_parslinux_home_box", None)
+        if not ui_home_box and hasattr(self, "GtkBuilder"):
+            ui_home_box = self.GtkBuilder.get_object("ui_parslinux_home_box")
+            if ui_home_box:
+                self.ui_parslinux_home_box = ui_home_box
+
+        if not hasattr(self, "ui_offline_infobar") or self.ui_offline_infobar is None:
+            if ui_home_box:
+                self.ui_offline_infobar = Gtk.InfoBar()
+                self.ui_offline_infobar.set_message_type(Gtk.MessageType.WARNING)
+                content = self.ui_offline_infobar.get_content_area()
+                msg_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 8)
+                icon = Gtk.Image.new_from_icon_name("network-offline-symbolic", Gtk.IconSize.BUTTON)
+                lbl = Gtk.Label.new()
+                lbl.set_markup("<b>{}</b> - {}".format(_("Offline Mode"), _("Network is unreachable. Showing cached and locally installed applications.")))
+                lbl.set_line_wrap(True)
+                msg_box.pack_start(icon, False, False, 0)
+                msg_box.pack_start(lbl, False, False, 0)
+                content.add(msg_box)
+                ui_home_box.pack_start(self.ui_offline_infobar, False, False, 0)
+                ui_home_box.reorder_child(self.ui_offline_infobar, 0)
+
+        if hasattr(self, "ui_offline_infobar") and self.ui_offline_infobar:
+            self.ui_offline_infobar.set_visible(is_offline)
+            if is_offline:
+                self.ui_offline_infobar.show_all()
+
     def afterServers(self):
+        GLib.idle_add(self.update_offline_banner)
         GLib.idle_add(self.set_initial_home)
         GLib.idle_add(self.control_available_apps)
         GLib.idle_add(self.set_categories)
@@ -1071,7 +1101,7 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
                 GLib.idle_add(self.splashlabel.set_markup,
                               "<b>{}</b>".format(_("Preparing the application interface")))
 
-                self.Server.connection = True
+                self.Server.connection = not getattr(self.Server, "is_offline", False)
                 GLib.idle_add(self.afterServers)
         else:
             if not self.connection_error_after:
@@ -1716,6 +1746,212 @@ class MainWindow(SliderMixin, ImageGalleryMixin, SearchMixin, DetailMixin, Queue
         self.set_cache_size()
 
         self.set_settings_tooltips()
+        self.load_flatpak_remotes_ui()
+
+    def load_flatpak_remotes_ui(self):
+        ui_settings_box = getattr(self, "ui_settings_box", None)
+        if not ui_settings_box and hasattr(self, "GtkBuilder"):
+            ui_settings_box = self.GtkBuilder.get_object("ui_settings_box")
+            if ui_settings_box:
+                self.ui_settings_box = ui_settings_box
+
+        if not ui_settings_box:
+            return
+
+        if not hasattr(self, "ui_settings_remotes_box") or self.ui_settings_remotes_box is None:
+            remotes_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 8)
+            remotes_box.set_margin_top(18)
+            remotes_box.set_margin_bottom(18)
+
+            sep = Gtk.Separator.new(Gtk.Orientation.HORIZONTAL)
+            remotes_box.pack_start(sep, False, False, 6)
+
+            header_h = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 12)
+            icon = Gtk.Image.new_from_icon_name("folder-remote-symbolic", Gtk.IconSize.BUTTON)
+            title = Gtk.Label.new()
+            title.set_markup("<b>{}</b>".format(_("Flatpak Yazılım Kaynakları (Depolar)")))
+            title.props.halign = Gtk.Align.START
+
+            add_btn = Gtk.Button.new_with_label(_("Yeni Depo Ekle"))
+            add_btn.get_style_context().add_class("suggested-action")
+            add_btn.props.valign = Gtk.Align.CENTER
+            add_btn.connect("clicked", lambda b: self.show_add_remote_dialog())
+
+            header_h.pack_start(icon, False, False, 0)
+            header_h.pack_start(title, False, False, 0)
+            header_h.pack_end(add_btn, False, False, 0)
+            remotes_box.pack_start(header_h, False, False, 6)
+
+            listbox = Gtk.ListBox.new()
+            listbox.set_selection_mode(Gtk.SelectionMode.NONE)
+            listbox.get_style_context().add_class("parslinux-software-listbox-mostdown")
+            remotes_box.pack_start(listbox, False, False, 4)
+
+            self.ui_settings_remotes_box = remotes_box
+            self.ui_remotes_listbox = listbox
+            ui_settings_box.pack_start(remotes_box, False, False, 0)
+
+        for child in self.ui_remotes_listbox.get_children():
+            self.ui_remotes_listbox.remove(child)
+
+        remotes = []
+        if hasattr(self, "FlatpakManager"):
+            remotes = self.FlatpakManager.get_remotes()
+
+        if not remotes:
+            row = Gtk.ListBoxRow()
+            empty_lbl = Gtk.Label.new()
+            empty_lbl.set_markup("<span color='gray'>{}</span>".format(_("Tanımlı Flatpak deposu bulunamadı.")))
+            empty_lbl.set_margin_top(12)
+            empty_lbl.set_margin_bottom(12)
+            row.add(empty_lbl)
+            self.ui_remotes_listbox.add(row)
+        else:
+            for rem in remotes:
+                row = Gtk.ListBoxRow()
+                row_box = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 12)
+                row_box.set_margin_start(12)
+                row_box.set_margin_end(12)
+                row_box.set_margin_top(8)
+                row_box.set_margin_bottom(8)
+
+                rem_icon = Gtk.Image.new_from_icon_name("network-server-symbolic", Gtk.IconSize.BUTTON)
+
+                info_box = Gtk.Box.new(Gtk.Orientation.VERTICAL, 2)
+                info_box.props.halign = Gtk.Align.START
+                name_lbl = Gtk.Label.new()
+                name_lbl.set_markup("<b>{}</b> ({})".format(GLib.markup_escape_text(rem["title"], -1), GLib.markup_escape_text(rem["name"], -1)))
+                name_lbl.props.halign = Gtk.Align.START
+
+                url_lbl = Gtk.Label.new()
+                url_lbl.set_markup("<small><span color='gray'>{}</span></small>".format(GLib.markup_escape_text(rem["url"], -1)))
+                url_lbl.props.halign = Gtk.Align.START
+                url_lbl.set_ellipsize(Pango.EllipsizeMode.END)
+                url_lbl.set_max_width_chars(45)
+
+                info_box.pack_start(name_lbl, False, False, 0)
+                info_box.pack_start(url_lbl, False, False, 0)
+
+                scope_badge = Gtk.Label.new()
+                scope_text = _("Kullanıcı") if rem["scope"] == "user" else _("Sistem")
+                scope_badge.set_markup(f"<small><b>[{scope_text}]</b></small>")
+                scope_badge.props.valign = Gtk.Align.CENTER
+
+                row_box.pack_start(rem_icon, False, False, 0)
+                row_box.pack_start(info_box, True, True, 0)
+                row_box.pack_end(scope_badge, False, False, 4)
+
+                if rem["scope"] == "user":
+                    del_btn = Gtk.Button.new()
+                    del_btn.set_image(Gtk.Image.new_from_icon_name("user-trash-symbolic", Gtk.IconSize.BUTTON))
+                    del_btn.set_relief(Gtk.ReliefStyle.NONE)
+                    del_btn.set_tooltip_text(_("Bu depoyu kaldır"))
+                    del_btn.props.valign = Gtk.Align.CENTER
+                    r_name = rem["name"]
+                    del_btn.connect("clicked", lambda b, rn=r_name: self.on_remove_remote_clicked(rn))
+                    row_box.pack_end(del_btn, False, False, 0)
+
+                row.add(row_box)
+                self.ui_remotes_listbox.add(row)
+
+        self.ui_settings_remotes_box.show_all()
+
+    def on_remove_remote_clicked(self, remote_name):
+        dialog = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text=_("Depoyu Kaldır"),
+        )
+        dialog.format_secondary_text(_("'{}' deposunu sistemden silmek istediğinize emin misiniz?").format(remote_name))
+        response = dialog.run()
+        dialog.destroy()
+        if response == Gtk.ResponseType.YES:
+            if hasattr(self, "FlatpakManager"):
+                success, msg = self.FlatpakManager.remove_remote(remote_name, is_user=True)
+                if success:
+                    self.notify(_("Depo Kaldırıldı"), _("'{}' deposu başarıyla silindi.").format(remote_name))
+                    self.load_flatpak_remotes_ui()
+                else:
+                    self.notify(_("Hata"), msg)
+
+    def show_add_remote_dialog(self):
+        dialog = Gtk.Dialog(
+            title=_("Yeni Flatpak Deposu Ekle"),
+            transient_for=self.window,
+            flags=0
+        )
+        dialog.add_buttons(
+            _("İptal"), Gtk.ResponseType.CANCEL,
+            _("Ekle"), Gtk.ResponseType.OK
+        )
+        content_area = dialog.get_content_area()
+        content_area.set_spacing(10)
+        content_area.set_margin_start(16)
+        content_area.set_margin_end(16)
+        content_area.set_margin_top(16)
+        content_area.set_margin_bottom(16)
+
+        preset_combo = Gtk.ComboBoxText()
+        preset_combo.append("custom", _("Özel Depo (Custom URL)"))
+        preset_combo.append("flathub_beta", "Flathub Beta (https://flathub.org/beta-repo/flathub-beta.flatpakrepo)")
+        preset_combo.append("gnome_nightly", "GNOME Nightly (https://nightly.gnome.org/gnome-nightly.flatpakrepo)")
+        preset_combo.append("flathub_official", "Flathub Resmî (https://dl.flathub.org/repo/flathub.flatpakrepo)")
+        preset_combo.set_active(0)
+
+        name_entry = Gtk.Entry()
+        name_entry.set_placeholder_text("Örn: flathub-beta")
+
+        url_entry = Gtk.Entry()
+        url_entry.set_placeholder_text("https://...")
+
+        presets = {
+            "flathub_beta": ("flathub-beta", "https://flathub.org/beta-repo/flathub-beta.flatpakrepo"),
+            "gnome_nightly": ("gnome-nightly", "https://nightly.gnome.org/gnome-nightly.flatpakrepo"),
+            "flathub_official": ("flathub", "https://dl.flathub.org/repo/flathub.flatpakrepo"),
+        }
+
+        def on_preset_changed(combo):
+            active_id = combo.get_active_id()
+            if active_id in presets:
+                p_name, p_url = presets[active_id]
+                name_entry.set_text(p_name)
+                url_entry.set_text(p_url)
+
+        preset_combo.connect("changed", on_preset_changed)
+
+        box_preset = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        box_preset.pack_start(Gtk.Label(label=_("Hazır Depo Şablonu:"), halign=Gtk.Align.START), False, False, 0)
+        box_preset.pack_start(preset_combo, False, False, 0)
+
+        box_name = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        box_name.pack_start(Gtk.Label(label=_("Depo Adı:"), halign=Gtk.Align.START), False, False, 0)
+        box_name.pack_start(name_entry, False, False, 0)
+
+        box_url = Gtk.Box.new(Gtk.Orientation.VERTICAL, 4)
+        box_url.pack_start(Gtk.Label(label=_("Depo URL / .flatpakrepo Adresi:"), halign=Gtk.Align.START), False, False, 0)
+        box_url.pack_start(url_entry, False, False, 0)
+
+        content_area.pack_start(box_preset, False, False, 4)
+        content_area.pack_start(box_name, False, False, 4)
+        content_area.pack_start(box_url, False, False, 4)
+        content_area.show_all()
+
+        response = dialog.run()
+        if response == Gtk.ResponseType.OK:
+            name = name_entry.get_text().strip()
+            url = url_entry.get_text().strip()
+            dialog.destroy()
+            if name and url and hasattr(self, "FlatpakManager"):
+                success, msg = self.FlatpakManager.add_remote(name, url, is_user=True)
+                if success:
+                    self.notify(_("Depo Eklendi"), _("'{}' deposu başarıyla sisteme kaydedildi.").format(name))
+                    self.load_flatpak_remotes_ui()
+                else:
+                    self.notify(_("Depo Eklenemedi"), msg)
+        else:
+            dialog.destroy()
 
     def on_ui_back_button_clicked(self, button):
         # If there is no history, there is nowhere to go back to.

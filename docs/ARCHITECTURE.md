@@ -51,18 +51,21 @@ Uygulama, eski ve hantal `.tar.gz` metadata sunucu modeli yerine, modern ve dağ
    - **Çift Katmanlı Önbellek (2-Tier Cache):**
      - *Bellek İçi Önbellek:* Tek oturum içinde aynı uç noktalara tekrarlanan çağrıları mikro-saniyeler içinde karşılar.
      - *Kalıcı Disk TTL Önbelleği:* `~/.cache/parslinux/parslinux-software/api_cache/` dizininde JSON yanıtlarını TTL süresiyle saklar. Popüler/trend yayınları için 4 saat, statik kategoriler için 24 saat geçerlilik süresi (TTL) uygulanır.
+   - **Çevrimdışı Mod ve Önbellek Araması:** İnternet erişimi olmadığında `has_offline_cache()` kontrolü ile diskteki önbellekle mağaza açılır; arama çubuğu `_search_offline_cache()` ile yerel koleksiyon JSON'larında arama yapar.
    - **Canlı Arama ve Debouncing:** Arama girdisindeki her harfte API boğulmasını önlemek için 250 milisaniyelik zamanlayıcı (`search_timeout_id`) kullanılarak sorgular Meilisearch'e iletilir.
    - **Paralel İkon Ön İndirme:** `ThreadPoolExecutor` havuzu (8 iş parçacığı) kullanarak uygulama simgelerini yerel dosya sistemine (`~/.cache/parslinux/parslinux-software/icons/app-icons`) asenkron olarak indirir.
 
 2. **`src/Server.py`**:
    - Sunucu soyutlama ve veri köprüsü katmanıdır.
    - Flathub modunda (`backend = flathub`), `FlathubClient` verilerini arayüzün beklediği `apps.json`, `cats.json` ve `home.json` veri yapılarına dönüştürerek yerel önbelleğe yazar.
+   - Ağ bağlantısı koptuğunda mağazanın çökmesini engelleyerek çevrimdışı önbellekle çalışmayı (`is_offline = True`) etkinleştirir.
 
-4. **`src/ODRSClient.py`**:
+3. **`src/ODRSClient.py`**:
    - `https://odrs.gnome.org` REST API'si üzerinden Open Desktop Rating Service oylama ve kullanıcı yorumlarını çeker.
    - 1-5 yıldız oylama dağılımını, ağırlıklı ortalama puanı ve toplam oy sayısını hesaplar.
    - Kullanıcının sistem diline (`user_locale`) göre filtrelenmiş ve sıralanmış gerçek topluluk incelemelerini asenkron (`fetch_feedback_async`) olarak sunar.
    - Puanlar için 2 saat, yorumlar için 1 saat yerel TTL disk önbelleği uygular.
+   - **Yorum ve Puan Gönderme (`submit_review` / `submit_review_async`):** `/etc/machine-id` üzerinden üretilen SHA1 hash (`user_hash`) ile tekil ve anonim olarak ODRS v1 API'sine kullanıcı incelemelerini POST eder.
 
 ---
 
@@ -72,6 +75,7 @@ Uygulama, eski ve hantal `.tar.gz` metadata sunucu modeli yerine, modern ve dağ
    - Sistemdeki `/usr/bin/flatpak` motorunu yönetir.
    - Sistem veya kullanıcı alanında kurulu Flatpak uygulamalarını (`flatpak list --app`) tarar ve `_installed_cache` sözlüğünde tutar.
    - **Gelişmiş İzin Yönetimi (Flatseal Benzeri):** `~/.local/share/flatpak/overrides/<app_id>` dosyasını okuyup ayrıştırarak ağ, ev dizini, dosya sistemi, ekran sunucusu, ses ve donanım izinlerini raporlar; `flatpak override --user` ile değiştirir veya sıfırlar.
+   - **Flatpak Depo (Remote) Yönetimi:** `get_remotes()`, `add_remote()`, `remove_remote()`, `toggle_remote()` metotları ile Flatpak depolarını sorgular, ekler veya siler.
    - **Güncelleme Motoru:** `flatpak remote-ls --updates` ile bekleyen güncellemeleri tespit eder; `update_all` ile tüm uygulamaları topluca günceller.
    - Kurulu uygulamaları masaüstü ortamında `start_new_session=True` ile bağımsız bir süreç olarak başlatır (`launch`).
 
