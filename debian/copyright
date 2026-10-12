@@ -1,11 +1,10 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: pardus-software
-Source: https://github.com/pardus/pardus-software
-
-
+Upstream-Name: parslinux-software
+Source: https://github.com/parslinux/parslinux-software
 
 Files: *
-Copyright: 2021 Fatih Altun <fatih.altun@pardus.org.tr>
+Copyright: 2026 Pars Linux Developers <dev@parslinux.org>
+           2021-2024 Fatih Altun
 License: GPL-3.0+
 
 License: GPL-3.0+
@@ -24,5 +23,3 @@ License: GPL-3.0+
  .
  On Debian systems, the complete text of the GNU General
  Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
-
-

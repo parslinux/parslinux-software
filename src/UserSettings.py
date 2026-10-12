@@ -9,7 +9,15 @@ Created on Fri Sep 18 14:53:00 2020
 import configparser
 from pathlib import Path
 
-import distro
+import os
+
+try:
+    import distro
+    HAS_DISTRO = True
+except ImportError:
+    distro = None
+    HAS_DISTRO = False
+
 import gi
 
 gi.require_version("GLib", "2.0")
@@ -17,13 +25,48 @@ from gi.repository import GLib
 from Logger import Logger
 
 
+def get_system_distro_info():
+    if HAS_DISTRO and distro:
+        try:
+            return {
+                "name": distro.name(),
+                "version": distro.version(),
+                "codename": distro.codename().lower(),
+                "major_version": distro.major_version().lower(),
+            }
+        except Exception:
+            pass
+
+    info = {"name": "Pars Linux", "version": "1.0", "codename": "parslinux", "major_version": "1"}
+    if os.path.exists("/etc/os-release"):
+        try:
+            with open("/etc/os-release", "r") as f:
+                for line in f:
+                    if "=" in line:
+                        k, v = line.strip().split("=", 1)
+                        v = v.strip('"')
+                        if k == "NAME":
+                            info["name"] = v
+                        elif k == "VERSION_ID":
+                            info["version"] = v
+                            info["major_version"] = v.split(".")[0]
+                        elif k == "VERSION_CODENAME":
+                            info["codename"] = v.lower()
+                        elif k == "ID" and not info.get("codename"):
+                            info["codename"] = v.lower()
+        except Exception:
+            pass
+    return info
+
+
 class UserSettings(object):
     def __init__(self):
-        self.user_distro_version = distro.major_version().lower()
-        self.user_codename = distro.codename().lower()
+        dist_info = get_system_distro_info()
+        self.user_distro_version = dist_info.get("major_version", "1")
+        self.user_codename = dist_info.get("codename", "parslinux")
         if self.user_codename == "etap":
             self.user_codename += self.user_distro_version
-        self.user_distro = ", ".join(filter(bool, (distro.name(), distro.version(), distro.codename())))
+        self.user_distro = f"{dist_info.get('name', 'Pars Linux')} {dist_info.get('version', '')}"
 
         self.user_name = GLib.get_user_name()
         self.user_real_name = GLib.get_real_name()
@@ -31,8 +74,8 @@ class UserSettings(object):
         if not self.user_real_name or self.user_real_name == "Unknown":
             self.user_real_name = self.user_name
 
-        self.cache_dir = "{}/pardus/pardus-software/".format(GLib.get_user_cache_dir())
-        self.config_dir = "{}/pardus/pardus-software/".format(GLib.get_user_config_dir())
+        self.cache_dir = "{}/parslinux/parslinux-software/".format(GLib.get_user_cache_dir())
+        self.config_dir = "{}/parslinux/parslinux-software/".format(GLib.get_user_config_dir())
 
         self.apps_dir = self.cache_dir + "apps/"
         self.cats_dir = self.cache_dir + "cats/"

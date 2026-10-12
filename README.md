@@ -1,55 +1,85 @@
-# Pardus Software Center
+# Pars Linux Yazılım Merkezi (Pars Linux Software Center)
 
-Pardus Software Center is a software center front-end for debian based operating systems.
+Pars Linux Yazılım Merkezi, modern Linux dağıtımları için geliştirilmiş, **Flathub REST API v2** ve **Flatpak** tabanlı, zengin ve modern bir GTK+ 3 grafik uygulama mağazasıdır.
 
-It is currently a work in progress. Maintenance is done by <a href="https://www.pardus.org.tr/">Pardus</a> team.
+Pars Linux Yazılım Merkezi, modern Flatpak ekosistemini temel alarak evrensel ve hızlı bir uygulama deneyimi sunar.
 
-You can see the web interface of the application center at <a href="https://apps.pardus.org.tr/">Pardus Apps</a>.
+---
 
-[![Packaging status](https://repology.org/badge/vertical-allrepos/pardus-software.svg)](https://repology.org/project/pardus-software/versions)
+## 🌟 Öne Çıkan Özellikler
 
-### **Dependencies**
+- **Flathub REST API v2 & Meilisearch:** Binlerce güncel uygulamayı popüler, trend, kategori ve canlı arama desteğiyle sunar.
+- **Evrensel Flatpak Yönetimi:** Tek tıkla kurma, kaldırma, güncelleme ve doğrudan masaüstünde bağımsız süreçte başlatma.
+- **Modüler Denetleyici Mimarisi (`src/controllers/`):** Bakımı kolaylaştıran 6 bağımsız mixin yapısı (Slider, Galeri, Arama & Kategori, Detay, Kuyruk ve Yüklü Uygulamalar).
+- **0ms Sıfır Titreme (Zero-Flicker) FlowBox:** Senkron kart inşası, kalıcı kayıt defteri ve yerel GTK filtreleme/sıralama mekanizmasıyla akıcı ve anlık sayfa geçişleri.
+- **Yüksek Performans & Çift Katmanlı Önbellek:** Bellek içi ve kalıcı disk TTL önbelleği (4s/24s), 250ms debounced arama ve asenkron ikon ön yükleme.
+- **Çift Erişimli Ayarlar:** Hem sol gezinme çubuğundan hem de başlık çubuğundaki menüden (☰) kolayca erişilebilen ayarlar paneli.
+- **20 Özel Vektör Kategori İkonu:** FreeDesktop standartlarında hazırlanan modern SVG kategori ikonları ve SVG yıldız derecelendirme sistemi.
+- **Dağıtım Bağımsız:** Pars Linux başta olmak üzere Arch Linux, Debian, Ubuntu ve Fedora dahil tüm Linux dağıtımlarında sorunsuz çalışır.
 
-This application is developed based on Python3 and GTK+ 3. Dependencies:
+---
+
+## 🚀 Hızlı Başlangıç
+
+### Bağımlılıkları Yükleyin:
+
+**Pars Linux & Arch Linux:**
 ```bash
-gir1.2-glib-2.0 gir1.2-gtk-3.0 gir1.2-notify-0.7 gir1.2-soup-2.4 gir1.2-vte-2.91 gvfs gvfs-backends python3-apt python3-cairo python3-distro python3-netifaces python3-psutil
+sudo pacman -S --needed python-gobject gtk3 flatpak vte3 libsoup libnotify
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-### **Run Application from Source**
-
-Install dependencies
+**Debian & Ubuntu:**
 ```bash
-sudo apt install gir1.2-glib-2.0 gir1.2-gtk-3.0 gir1.2-notify-0.7 gir1.2-soup-2.4 gir1.2-vte-2.91 gvfs gvfs-backends python3-apt python3-cairo python3-distro python3-netifaces python3-psutil
-```
-Clone the repository
-```bash
-git clone https://github.com/pardus/pardus-software.git ~/pardus-software
-```
-Run application
-```bash
-python3 ~/pardus-software/src/Main.py
+sudo apt update
+sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-notify-0.7 gir1.2-soup-2.4 gir1.2-vte-2.91 flatpak
+flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 ```
 
-### **Build deb package**
-
+### Uygulamayı Çalıştırın:
 ```bash
-sudo apt install devscripts git-buildpackage
-sudo mk-build-deps -ir
-gbp buildpackage --git-export-dir=/tmp/build/pardus-software -us -uc
+git clone https://github.com/parslinux/parslinux-software.git
+cd parslinux-software
+./parslinux-software
 ```
 
-### **Screenshots**
+### Hızlı Test Komutları:
+```bash
+# Kod Derleme ve Denetleyici Doğrulaması
+python3 -m py_compile setup.py src/*.py src/controllers/*.py
+python3 scratch/verify_mixins.py
 
-![Pardus Software Center 1](screenshots/pardus-software-1.png)
+# FlowBox Kararlılık ve Sıfır Titreme Testi
+python3 scratch/test_flowbox_stability.py
+```
 
-![Pardus Software Center 2](screenshots/pardus-software-2.png)
+---
 
-![Pardus Software Center 3](screenshots/pardus-software-3.png)
+## 📚 Kapsamlı Dokümantasyon (`docs/`)
 
-![Pardus Software Center 4](screenshots/pardus-software-4.png)
+Tüm teknik, mimari ve kullanıcı rehberleri **[docs/](docs/)** dizini altında toplanmıştır:
 
-![Pardus Software Center 5](screenshots/pardus-software-5.png)
+| Doküman | İçerik |
+| :--- | :--- |
+| **[Mimari (ARCHITECTURE.md)](docs/ARCHITECTURE.md)** | Modüler mixin yapısı, FlowBox mimarisi, Flathub/Flatpak motoru |
+| **[Kurulum Rehberi (INSTALL.md)](docs/INSTALL.md)** | Detaylı dağıtım kurulumları, masaüstü entegrasyonu ve dizinler |
+| **[Özel Sunucu Kılavuzu (SELF_HOSTING_GUIDE.md)](docs/SELF_HOSTING_GUIDE.md)** | Kurumsal ağlarda kendi Flathub/Flatpak aynanızı barındırma |
+| **[Değişiklik Günlüğü (CHANGELOG.md)](docs/CHANGELOG.md)** | Sürüm geçmişi, modüler refactor ve performans geliştirmeleri |
+| **[Ödeme ve Bağış (PAYMENT_INTEGRATION.md)](docs/PAYMENT_INTEGRATION.md)** | Geliştirici destekleme ve bağış modelleri |
+| **[Şartlar (TERMS.md)](docs/TERMS.md) / [SARTLAR.md](docs/SARTLAR.md)** | Kullanım koşulları ve sorumluluk reddi |
+| **[AI Asistan Rehberi (CLAUDE.md)](docs/CLAUDE.md)** | Claude ve AI ajanları için kod tabanı kuralları ve standartlar |
+| **[Yol Haritası (progress.md)](docs/progress.md)** | Gelişim aşamaları, tamamlanan fazlar ve gelecek hedefler |
+| **[Test Kılavuzu (TESTING.md)](docs/TESTING.md)** | Birim, API, mixin ve başsız (headless) arayüz testleri |
+| **[Komut Satırı Rehberi (CLI_REFERENCE.md)](docs/CLI_REFERENCE.md)** | Parametreler ve Flatpak hata ayıklama komutları |
+| **[Çeviri Rehberi (TRANSLATION_GUIDE.md)](docs/TRANSLATION_GUIDE.md)** | Yeni diller ekleme ve gettext kullanımı |
+| **[Katkıda Bulunma (CONTRIBUTING.md)](docs/CONTRIBUTING.md)** | Katkı süreci ve PR kuralları |
+| **[Uygulama Bağlama (UYGULAMA_BAGLAMA.md)](docs/UYGULAMA_BAGLAMA.md)** | Flathub'da uygulama yayınlama ve AppStream hazırlama |
+| **[Veri Tasarrufu (DATA_SAVING_GUIDE.md)](docs/DATA_SAVING_GUIDE.md)** | 2-tier disk önbelleği, TTL yönetimi ve bant genişliği tasarrufu |
+| **[Güvenlik (SECURITY.md)](docs/SECURITY.md)** | Polkit, Bubblewrap sandbox ve açık bildirim süreci |
+| **[Sürüm Politikası (VERSION.md)](docs/VERSION.md)** | SemVer sürümleme ilkeleri |
 
-![Pardus Software Center 6](screenshots/pardus-software-6.png)
+---
 
-![Pardus Software Center 7](screenshots/pardus-software-7.png)
+## 📄 Lisans
+
+Pars Linux Yazılım Merkezi, [GNU General Public License v3.0 (GPLv3)](LICENSE) kapsamında lisanslanmıştır.

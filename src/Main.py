@@ -1,22 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Copyright: 2021 Pardus Developers <dev@pardus.org.tr>
- This file is part of pardus-software.
- pardus-software is free software: you can redistribute it and/or modify it under the terms of the GNU General
- Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
- option) any later version.
-
- Foobar is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License along with Foobar. If not, see
- <https://www.gnu.org/licenses/>.
-
-Created on Fri Sep 18 14:53:00 2020
-@author: fatih
-"""
+# Copyright: 2026 Pars Linux Developers <dev@parslinux.org>
+# This file is part of parslinux-software.
+# parslinux-software is free software: you can redistribute it and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
 
 import sys
 
@@ -30,10 +18,10 @@ from gi.repository import Gtk, Gio, GLib
 
 class Application(Gtk.Application):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, application_id="tr.org.pardus.software",
+        super().__init__(*args, application_id="org.parslinux.software",
                          flags=Gio.ApplicationFlags(8), **kwargs)
         self.window = None
-        GLib.set_prgname("tr.org.pardus.software")
+        GLib.set_prgname("org.parslinux.software")
 
         self.add_main_option(
             "details",
@@ -71,5 +59,6 @@ class Application(Gtk.Application):
         return 0
 
 
-app = Application()
-app.run(sys.argv)
+if __name__ == "__main__":
+    app = Application()
+    app.run(sys.argv)

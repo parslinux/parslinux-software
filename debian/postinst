@@ -4,6 +4,6 @@ update-mime-database /usr/share/mime || true
 
 update-desktop-database || true
 
-getent group pardus-software &> /dev/null || addgroup --system pardus-software || true
+getent group parslinux-software &> /dev/null || addgroup --system parslinux-software || true
 
 exit 0

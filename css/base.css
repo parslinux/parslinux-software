@@ -2,15 +2,15 @@
     base css for all themes
 */
 
-.pardus-software-frame > border{
+.parslinux-software-frame > border{
     border-radius: 8px;
 }
 
-.pardus-software-accent-label{
+.parslinux-software-accent-label{
     color: @theme_selected_bg_color;
 }
 
-.pardus-software-comment-textview text{
+.parslinux-software-comment-textview text{
     background-color: alpha(@unfocused_borders, 0.45);;
     border-radius: 8px;
 }
@@ -19,68 +19,68 @@
     background-color: #FFB400;
 }
 
-.pardus-software-codename-label{
+.parslinux-software-codename-label{
     background: alpha(@unfocused_borders, 0.4);
     padding: 5px 9px;
     border-radius: 20px;
 }
 
-.pardus-software-left-cats-box{
+.parslinux-software-left-cats-box{
     background-color:alpha(@unfocused_borders, 0.3);
 }
 
-.pardus-software-left-cats-box:backdrop{
+.parslinux-software-left-cats-box:backdrop{
     background-color:alpha(@unfocused_borders, 0.1);
 }
 
-.pardus-software-left-cats-listbox{
+.parslinux-software-left-cats-listbox{
     background-color:transparent;
     border-radius:8px;
     padding-bottom: 0px;
 }
 
-.pardus-software-left-cats-listbox row{
+.parslinux-software-left-cats-listbox row{
     margin-bottom: 8px;
 }
 
-.pardus-software-left-cats-listbox row:hover, row:selected{
+.parslinux-software-left-cats-listbox row:hover, row:selected{
     border-radius:8px;
 }
 
-.pardus-software-left-cats-listbox row:backdrop:hover:not(:selected) {
+.parslinux-software-left-cats-listbox row:backdrop:hover:not(:selected) {
     background-color: alpha(@unfocused_borders, 0.23);
 }
 
-.pardus-software-left-installed-listbox{
+.parslinux-software-left-installed-listbox{
     padding-top: 0px;
 }
 
-.pardus-software-left-updates-count-box {
+.parslinux-software-left-updates-count-box {
     background-color: alpha(mix(currentColor, @theme_selected_bg_color, 0.5), 0.13);
     border-radius: 8px;
     border: 1px solid @theme_selected_bg_color;
     color: @theme_selected_bg_color;
 }
 
-.pardus-software-listbox-mostdown{
+.parslinux-software-listbox-mostdown{
     background-color:transparent;
 }
 
-.pardus-software-listbox-mostdown row {
+.parslinux-software-listbox-mostdown row {
     margin: 0px;
     padding: 0px;
     border-radius: 8px;
 }
 
-.pardus-software-listbox-mostdown row:hover{
+.parslinux-software-listbox-mostdown row:hover{
     background-color: alpha(@unfocused_borders, 0.5);
 }
 
-.pardus-software-mostdown-bottom-seperator{
+.parslinux-software-mostdown-bottom-seperator{
     margin: 0px;
 }
 
-.pardus-software-mostapp-icon{
+.parslinux-software-mostapp-icon{
     background-color: alpha(@unfocused_borders, 0.4);
     border-radius: 8px;
     padding: 8px;
@@ -108,3 +108,8 @@ button.openup-action:disabled { color: mix(@theme_fg_color, @theme_bg_color, 0.5
     50% { box-shadow: 0 0 14px @theme_selected_bg_color; }
     100% { box-shadow: 0 0 4px @theme_selected_bg_color; }
 }
+
+.parslinux-software-screenshot {
+    border-radius: 8px;
+}
+

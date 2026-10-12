@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Pars Linux Software Center Application Viewer
+Name[tr]=Pars Linux Yazılım Merkezi Uygulama Görüntüleyici
+GenericName=Software Center Application Viewer
+GenericName[tr]=Yazılım Merkezi Uygulama Görüntüleyici
+Comment=View .parsapp applications
+Comment[tr]=.parsapp uygulamalarını görüntüleyin
+Exec=parslinux-software --details %f
+Icon=parslinux-software
+Terminal=false
+Type=Application
+Categories=GTK;System;PackageManager;
+StartupNotify=true
+MimeType=application/parslinux-software-app
+NoDisplay=true

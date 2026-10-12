@@ -1,12 +1,12 @@
-Source: pardus-software
+Source: parslinux-software
 Section: admin
 Priority: optional
-Maintainer: Fatih Altun <fatih.altun@pardus.org.tr>
+Maintainer: Pars Linux Developers <dev@parslinux.org>
 Build-Depends: debhelper-compat (= 13), dh-python, python3-all, python3-setuptools, gettext
 Standards-Version: 4.6.1
-Homepage: https://github.com/pardus/pardus-software
+Homepage: https://github.com/parslinux/parslinux-software
 
-Package: pardus-software
+Package: parslinux-software
 Architecture: all
 Depends: ${misc:Depends},
          ${python3:Depends},
@@ -25,5 +25,5 @@ Depends: ${misc:Depends},
          python3-psutil
 Recommends: desktop-file-utils,
             shared-mime-info
-Description: Pardus Software Center
+Description: Pars Linux Software Center
  Install, remove, update applications

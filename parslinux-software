@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+import os
+import sys
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
+src_dir = os.path.join(base_dir, "src")
+if os.path.exists(src_dir):
+    sys.path.insert(0, src_dir)
+else:
+    sys.path.insert(0, "/usr/share/parslinux/parslinux-software/src/")
+
+from Main import Application
+
+if __name__ == "__main__":
+    app = Application()
+    sys.exit(app.run(sys.argv))

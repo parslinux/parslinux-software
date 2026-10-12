@@ -19,8 +19,8 @@ from gi.repository import GLib
 class Logger(object):
     def __init__(self, name):
 
-        logdir = Path.joinpath(Path(GLib.get_user_cache_dir()), Path("pardus/pardus-software"))
-        logfile = Path.joinpath(logdir, "pardus-software.log")
+        logdir = Path.joinpath(Path(GLib.get_user_cache_dir()), Path("parslinux/parslinux-software"))
+        logfile = Path.joinpath(logdir, "parslinux-software.log")
 
         loglevel = logging.INFO  # Possible values are {DEBUG, INFO, WARN, ERROR, CRITICAL}
 

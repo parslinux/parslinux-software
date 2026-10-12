@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC "-//freedesktop//DTD polkit Policy Configuration 1.0//EN"
+"http://www.freedesktop.org/software/polkit/policyconfig-1.dtd">
+<policyconfig>
+
+  <vendor>Pars Linux Developers</vendor>
+  <vendor_url>https://parslinux.org</vendor_url>
+
+  <action id="org.parslinux.pkexec.parslinux-software-action">
+    <description>Pars Linux Software Center Authentication</description>
+    <message>Authentication is required for Pars Linux Software Center</message>
+    <message xml:lang="tr">Pars Linux Yazılım Merkezi için yetkilendirme gerekiyor</message>
+    <icon_name>preferences-system</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/share/parslinux/parslinux-software/src/Actions.py</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+  <action id="org.parslinux.pkexec.parslinux-software-sysaction">
+    <description>Pars Linux Software Center Authentication</description>
+    <message>Authentication is required for Pars Linux Software Center</message>
+    <message xml:lang="tr">Pars Linux Yazılım Merkezi için yetkilendirme gerekiyor</message>
+    <icon_name>preferences-system</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/share/parslinux/parslinux-software/src/SysActions.py</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+  <action id="org.parslinux.pkexec.parslinux-software-groupaction">
+    <description>Pars Linux Software Center Authentication</description>
+    <message>Authentication is required for Pars Linux Software Center</message>
+    <message xml:lang="tr">Pars Linux Yazılım Merkezi için yetkilendirme gerekiyor</message>
+    <icon_name>preferences-system</icon_name>
+    <defaults>
+      <allow_any>auth_admin</allow_any>
+      <allow_inactive>auth_admin</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+    <annotate key="org.freedesktop.policykit.exec.path">/usr/share/parslinux/parslinux-software/src/Group.py</annotate>
+    <annotate key="org.freedesktop.policykit.exec.allow_gui">true</annotate>
+  </action>
+
+</policyconfig>

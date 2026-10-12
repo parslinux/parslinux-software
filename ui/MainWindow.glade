@@ -126,7 +126,7 @@
     <property name="window-position">center</property>
     <property name="default-width">1071</property>
     <property name="default-height">750</property>
-    <property name="icon-name">pardus-software</property>
+    <property name="icon-name">parslinux-software</property>
     <signal name="key-press-event" handler="on_main_key_press_event" swapped="no"/>
     <child>
       <object class="GtkStack" id="mainstack">
@@ -460,7 +460,7 @@
                     <property name="vexpand">True</property>
                     <property name="transition-type">crossfade</property>
                     <child>
-                      <object class="GtkBox" id="ui_pardus_home_box">
+                      <object class="GtkBox" id="ui_parslinux_home_box">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="margin-end">13</property>
@@ -502,7 +502,7 @@
                                                 <property name="margin-end">12</property>
                                                 <signal name="row-activated" handler="on_ui_leftcats_listbox_row_activated" swapped="no"/>
                                                 <style>
-                                                  <class name="pardus-software-left-cats-listbox"/>
+                                                  <class name="parslinux-software-left-cats-listbox"/>
                                                 </style>
                                               </object>
                                               <packing>
@@ -519,8 +519,8 @@
                                                 <property name="margin-end">12</property>
                                                 <signal name="row-activated" handler="on_ui_leftinstalled_listbox_row_activated" swapped="no"/>
                                                 <style>
-                                                  <class name="pardus-software-left-cats-listbox"/>
-                                                  <class name="pardus-software-left-installed-listbox"/>
+                                                  <class name="parslinux-software-left-cats-listbox"/>
+                                                  <class name="parslinux-software-left-installed-listbox"/>
                                                 </style>
                                               </object>
                                               <packing>
@@ -548,7 +548,7 @@
                                     <property name="margin-end">12</property>
                                     <signal name="row-activated" handler="on_ui_leftupdates_listbox_row_activated" swapped="no"/>
                                     <style>
-                                      <class name="pardus-software-left-cats-listbox"/>
+                                      <class name="parslinux-software-left-cats-listbox"/>
                                     </style>
                                   </object>
                                   <packing>
@@ -572,7 +572,7 @@
                                   </packing>
                                 </child>
                                 <style>
-                                  <class name="pardus-software-left-cats-box"/>
+                                  <class name="parslinux-software-left-cats-box"/>
                                 </style>
                               </object>
                               <packing>
@@ -1013,7 +1013,7 @@
                                     <property name="can-focus">False</property>
                                     <property name="orientation">vertical</property>
                                     <child>
-                                      <object class="GtkScrolledWindow" id="ui_pardusapps_scrolledwindow">
+                                      <object class="GtkScrolledWindow" id="ui_parslinuxapps_scrolledwindow">
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
                                         <property name="hscrollbar-policy">never</property>
@@ -1032,7 +1032,7 @@
                                                 <property name="margin-bottom">21</property>
                                                 <property name="orientation">vertical</property>
                                                 <child>
-                                                  <object class="GtkStack" id="ui_pardusapps_title_stack">
+                                                  <object class="GtkStack" id="ui_parslinuxapps_title_stack">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
                                                     <child>
@@ -1198,7 +1198,7 @@
                                                       </packing>
                                                     </child>
                                                     <child>
-                                                      <object class="GtkComboBoxText" id="ui_pardusapps_combobox">
+                                                      <object class="GtkComboBoxText" id="ui_parslinuxapps_combobox">
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
                                                         <property name="active">0</property>
@@ -1209,7 +1209,7 @@
                                                           <item id="2" translatable="yes">Sort by Popularity</item>
                                                           <item id="3" translatable="yes">Sort by Last Added</item>
                                                         </items>
-                                                        <signal name="changed" handler="on_ui_pardusapps_combobox_changed" swapped="no"/>
+                                                        <signal name="changed" handler="on_ui_parslinuxapps_combobox_changed" swapped="no"/>
                                                       </object>
                                                       <packing>
                                                         <property name="expand">False</property>
@@ -1226,7 +1226,7 @@
                                                   </packing>
                                                 </child>
                                                 <child>
-                                                  <object class="GtkFlowBox" id="ui_pardusapps_flowbox">
+                                                  <object class="GtkFlowBox" id="ui_parslinuxapps_flowbox">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
                                                     <property name="valign">start</property>
@@ -1236,7 +1236,7 @@
                                                     <property name="max-children-per-line">4</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -1285,7 +1285,7 @@
                                                     <property name="max-children-per-line">4</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -1464,7 +1464,7 @@
                                                     <property name="max-children-per-line">2</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -1602,7 +1602,7 @@
                                                     <property name="max-children-per-line">2</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -1663,7 +1663,7 @@
                                                     <property name="icon-name">image-x-generic</property>
                                                     <property name="icon_size">5</property>
                                                     <style>
-                                                      <class name="pardus-software-mostapp-icon"/>
+                                                      <class name="parslinux-software-mostapp-icon"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -1734,7 +1734,7 @@
                                                         <property name="halign">start</property>
                                                         <property name="label">Category</property>
                                                         <style>
-                                                          <class name="pardus-software-accent-label"/>
+                                                          <class name="parslinux-software-accent-label"/>
                                                         </style>
                                                       </object>
                                                       <packing>
@@ -2243,7 +2243,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                       </object>
                                                     </child>
                                                     <style>
-                                                      <class name="pardus-software-frame"/>
+                                                      <class name="parslinux-software-frame"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -2607,7 +2607,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">start</property>
-                                                            <property name="label">Pardus</property>
+                                                            <property name="label">Pars Linux</property>
                                                             <property name="wrap">True</property>
                                                             <property name="wrap-mode">word-char</property>
                                                             <property name="ellipsize">end</property>
@@ -2700,7 +2700,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">start</property>
-                                                            <property name="label">Pardus Main</property>
+                                                            <property name="label">Pars Linux Main</property>
                                                             <property name="wrap">True</property>
                                                             <property name="wrap-mode">word-char</property>
                                                             <property name="selectable">True</property>
@@ -2747,7 +2747,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                             <property name="visible">True</property>
                                                             <property name="can-focus">False</property>
                                                             <property name="halign">start</property>
-                                                            <property name="label">Pardus Developers</property>
+                                                            <property name="label">Pars Linux Developers</property>
                                                             <property name="selectable">True</property>
                                                             <property name="ellipsize">end</property>
                                                             <property name="single-line-mode">True</property>
@@ -2811,7 +2811,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
                                                         <property name="halign">start</property>
-                                                        <property name="label">https://www.pardus.org.tr</property>
+                                                        <property name="label">https://parslinux.org</property>
                                                         <property name="wrap">True</property>
                                                         <property name="wrap-mode">word-char</property>
                                                         <property name="selectable">True</property>
@@ -2858,7 +2858,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                         <property name="visible">True</property>
                                                         <property name="can-focus">False</property>
                                                         <property name="halign">start</property>
-                                                        <property name="label">dev@pardus.org.tr</property>
+                                                        <property name="label">dev@parslinux.org</property>
                                                         <property name="wrap">True</property>
                                                         <property name="wrap-mode">word-char</property>
                                                         <property name="selectable">True</property>
@@ -4043,7 +4043,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                     <property name="max-children-per-line">4</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -4130,7 +4130,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                     <property name="max-children-per-line">4</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -4217,7 +4217,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                     <property name="max-children-per-line">4</property>
                                                     <property name="selection-mode">none</property>
                                                     <style>
-                                                      <class name="pardus-software-flowbox"/>
+                                                      <class name="parslinux-software-flowbox"/>
                                                     </style>
                                                   </object>
                                                   <packing>
@@ -4365,7 +4365,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                                                         <property name="max-children-per-line">2</property>
                                                         <property name="selection-mode">none</property>
                                                         <style>
-                                                          <class name="pardus-software-flowbox"/>
+                                                          <class name="parslinux-software-flowbox"/>
                                                         </style>
                                                       </object>
                                                       <packing>
@@ -5085,7 +5085,7 @@ The application may have been installed using tools such as Flatpak, Snap, or Wi
                         </child>
                       </object>
                       <packing>
-                        <property name="name">pardushome</property>
+                        <property name="name">parslinuxhome</property>
                       </packing>
                     </child>
                     <child>
@@ -5400,7 +5400,7 @@ Use with caution. Are you sure you want to continue?</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label" translatable="yes">You can ask for help about your problem through Pardus help channels.</property>
+                                    <property name="label" translatable="yes">You can ask for help about your problem through Pars Linux help channels.</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -5412,7 +5412,7 @@ Use with caution. Are you sure you want to continue?</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label">&lt;a title='Pardus Forum' href='https://forum.pardus.org.tr'&gt;forum.pardus.org.tr&lt;/a&gt;</property>
+                                    <property name="label">&lt;a title='Pars Linux Forum' href='https://forum.parslinux.org'&gt;forum.parslinux.org&lt;/a&gt;</property>
                                     <property name="use-markup">True</property>
                                     <property name="selectable">True</property>
                                   </object>
@@ -5426,7 +5426,7 @@ Use with caution. Are you sure you want to continue?</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label">&lt;a title='Pardus Mail' href='mailto:bilgi@pardus.org.tr'&gt;bilgi@pardus.org.tr&lt;/a&gt;</property>
+                                    <property name="label">&lt;a title='Pars Linux Mail' href='mailto:bilgi@parslinux.org'&gt;bilgi@parslinux.org&lt;/a&gt;</property>
                                     <property name="use-markup">True</property>
                                     <property name="selectable">True</property>
                                   </object>
@@ -5440,7 +5440,7 @@ Use with caution. Are you sure you want to continue?</property>
                                   <object class="GtkLabel">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="label">&lt;a title='Pardus Web' href='https://pardus.org.tr'&gt;pardus.org.tr&lt;/a&gt;</property>
+                                    <property name="label">&lt;a title='Pars Linux Web' href='https://parslinux.org'&gt;parslinux.org&lt;/a&gt;</property>
                                     <property name="use-markup">True</property>
                                     <property name="selectable">True</property>
                                   </object>
@@ -5604,7 +5604,7 @@ Use with caution. Are you sure you want to continue?</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="pixel-size">32</property>
-                <property name="icon-name">pardus-software</property>
+                <property name="icon-name">parslinux-software</property>
                 <property name="icon_size">5</property>
               </object>
               <packing>
@@ -5617,7 +5617,7 @@ Use with caution. Are you sure you want to continue?</property>
               <object class="GtkLabel">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="label" translatable="yes">Pardus Store</property>
+                <property name="label" translatable="yes">Pars Linux Store</property>
                 <property name="ellipsize">end</property>
                 <property name="single-line-mode">True</property>
                 <property name="max-width-chars">20</property>
@@ -5678,21 +5678,21 @@ Use with caution. Are you sure you want to continue?</property>
   <object class="GtkAboutDialog" id="aboutdialog">
     <property name="can-focus">False</property>
     <property name="window-position">center-on-parent</property>
-    <property name="icon-name">pardus-software</property>
+    <property name="icon-name">parslinux-software</property>
     <property name="type-hint">dialog</property>
     <property name="gravity">center</property>
     <property name="transient-for">MainWindow</property>
-    <property name="program-name">Pardus Software Center</property>
+    <property name="program-name">Pars Linux Software Center</property>
     <property name="version">0.1.0~alpha1</property>
     <property name="copyright">© TÜBİTAK BİLGEM</property>
     <property name="comments" translatable="yes">Install, remove, update applications</property>
-    <property name="website">https://github.com/pardus/pardus-software</property>
+    <property name="website">https://github.com/parslinux/parslinux-software</property>
     <property name="website-label" translatable="yes">Website</property>
-    <property name="authors">Fatih Altun &lt;fatih.altun@pardus.org.tr&gt;</property>
+    <property name="authors">Pars Linux Geliştiricileri &lt;dev@parslinux.org&gt;</property>
     <property name="translator-credits" translatable="yes" comments="Name Surname &lt;example@examplemail.com&gt;">translator-credits</property>
     <property name="artists">Mert Çelik &lt;mert.celik@tubitak.gov.tr&gt;
-Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
-    <property name="logo-icon-name">pardus-software</property>
+Pars Linux Geliştiricileri &lt;dev@parslinux.org&gt;</property>
+    <property name="logo-icon-name">parslinux-software</property>
     <property name="license-type">gpl-3-0</property>
     <child internal-child="vbox">
       <object class="GtkBox">
@@ -5977,7 +5977,7 @@ Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
                             <property name="icon-name">image-x-generic</property>
                             <property name="icon_size">5</property>
                             <style>
-                              <class name="pardus-software-mostapp-icon"/>
+                              <class name="parslinux-software-mostapp-icon"/>
                             </style>
                           </object>
                           <packing>
@@ -6251,7 +6251,7 @@ Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
                                 <property name="buffer">ui_comment_content_textbuffer</property>
                                 <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
                                 <style>
-                                  <class name="pardus-software-comment-textview"/>
+                                  <class name="parslinux-software-comment-textview"/>
                                 </style>
                               </object>
                               <packing>
@@ -6538,7 +6538,7 @@ Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
                               </object>
                             </child>
                             <style>
-                              <class name="pardus-software-frame"/>
+                              <class name="parslinux-software-frame"/>
                             </style>
                           </object>
                           <packing>
@@ -6666,7 +6666,7 @@ Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
           <object class="GtkLabel">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
-            <property name="label" translatable="yes">This application served from Pardus non-free package repositories, so that the OS has nothing to do with the health of the application.</property>
+            <property name="label" translatable="yes">This application served from non-free package repositories, so that the OS has nothing to do with the health of the application.</property>
             <property name="use-markup">True</property>
             <property name="wrap">True</property>
             <property name="max-width-chars">35</property>
@@ -8188,7 +8188,7 @@ Yusuf Düzgün &lt;yusuf.duzgun@pardus.org.tr&gt;</property>
                         <property name="buffer">ui_suggest_why_textbuffer</property>
                         <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI | GTK_INPUT_HINT_NONE</property>
                         <style>
-                          <class name="pardus-software-comment-textview"/>
+                          <class name="parslinux-software-comment-textview"/>
                         </style>
                       </object>
                       <packing>

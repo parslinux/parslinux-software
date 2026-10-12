@@ -10,13 +10,34 @@ import os
 import subprocess
 import sys
 import pwd
-import apt
-import apt_pkg
-import psutil
+import signal
+try:
+    import psutil
+except ImportError:
+    psutil = None
+try:
+    import apt
+    import apt_pkg
+    HAS_APT = True
+except ImportError:
+    apt = None
+    apt_pkg = None
+    HAS_APT = False
 import re
+
+
+def is_flatpak_package(packages):
+    parts = packages.split()
+    for p in parts:
+        if "." in p and not p.endswith(".deb") and not p.startswith("-"):
+            return True
+    return False
+
 
 def main():
     def control_lock():
+        if not HAS_APT or not apt_pkg:
+            return True
         apt_pkg.init_system()
         try:
             apt_pkg.pkgsystem_lock()
@@ -45,6 +66,11 @@ def main():
         return apt_options, valid_packages
 
     def install(packages):
+        if is_flatpak_package(packages):
+            cmd = ["flatpak", "install", "-y", "--noninteractive", "flathub"] + packages.split()
+            subprocess.call(cmd)
+            return
+
         apt_options, valid_packages = parse_packages(packages)
 
         if not valid_packages:
@@ -55,6 +81,11 @@ def main():
         subprocess.call(cmd, env={**os.environ, 'DEBIAN_FRONTEND': 'noninteractive'})
 
     def remove(packages):
+        if is_flatpak_package(packages):
+            cmd = ["flatpak", "uninstall", "-y", "--noninteractive"] + packages.split()
+            subprocess.call(cmd)
+            return
+
         apt_options, valid_packages = parse_packages(packages)
 
         if not valid_packages:
@@ -65,6 +96,11 @@ def main():
         subprocess.call(cmd, env={**os.environ, 'DEBIAN_FRONTEND': 'noninteractive'})
 
     def upgrade(packages):
+        if is_flatpak_package(packages):
+            cmd = ["flatpak", "update", "-y", "--noninteractive"] + packages.split()
+            subprocess.call(cmd)
+            return
+
         apt_options, valid_packages = parse_packages(packages)
 
         if not valid_packages:
@@ -79,7 +115,7 @@ def main():
                         env={**os.environ, 'DEBIAN_FRONTEND': 'noninteractive'})
 
     def enable_i386_install(packages):
-        print("pardus-software-i386-start", file=sys.stderr)
+        print("parslinux-software-i386-start", file=sys.stderr)
         subprocess.call(["dpkg", "--add-architecture", "i386"])
         try:
             cache = apt.Cache()
@@ -98,11 +134,19 @@ def main():
             print(f"kill func: cannot kill, pid: {pid}")
             return
 
+        if not psutil:
+            try:
+                os.kill(int(pid), signal.SIGTERM)
+                print(f"kill func: killed process {pid}")
+            except Exception as e:
+                print(f"kill func error: {e}")
+            return
+
         parent = psutil.Process(int(pid))
 
         parent_cmdline = "".join(parent.cmdline())
-        if "pardus-software/src/Actions.py" not in parent_cmdline:
-            print("kill func: not pardus-software process")
+        if "Actions.py" not in parent_cmdline:
+            print("kill func: not software process")
             return
 
         install_phase = any("dpkg" in child.exe() for child in parent.children(recursive=True))
@@ -123,12 +167,10 @@ def main():
                 child_cmdline = " ".join(child.cmdline())
                 print(f"Checking child: {child_name} PID={child_pid} exe={child_exe} user={child_user} cmdline={child_cmdline}")
 
-                # apt child
-                if child_name == "apt" and child_exe == "/usr/bin/apt" and "apt" in child_cmdline:
-                    print(f"Adding apt child to kill list: {child_name} PID={child_pid}")
+                if child_name in ("apt", "flatpak") and ("apt" in child_cmdline or "flatpak" in child_cmdline):
+                    print(f"Adding child to kill list: {child_name} PID={child_pid}")
                     kill_dic[child_pid] = child_name
 
-                # apt download child
                 elif child_user == "_apt" and \
                      (child_exe.startswith("/usr/lib/apt/methods")) and \
                      (child_cmdline.startswith("/usr/lib/apt/methods")):
@@ -147,23 +189,37 @@ def main():
             print(f"parent killing name: {parent.name()} - pid: {parent.pid}")
             parent.kill()
         else:
-            print("No apt/_apt download child found. Nothing to kill.")
+            print("No apt/flatpak download child found. Nothing to kill.")
 
     if len(sys.argv) > 1:
-        if sys.argv[1] == "kill":
+        action = sys.argv[1]
+        if action == "kill":
             kill(sys.argv[2])
             return
+
+        packages_arg = sys.argv[2] if len(sys.argv) > 2 else ""
+
+        # Flatpak packages do not need APT system lock
+        if is_flatpak_package(packages_arg):
+            if action == "install":
+                install(packages_arg)
+            elif action == "remove":
+                remove(packages_arg)
+            elif action == "upgrade":
+                upgrade(packages_arg)
+            return
+
         if control_lock():
-            if sys.argv[1] == "install":
-                install(sys.argv[2])
-            elif sys.argv[1] == "remove":
-                remove(sys.argv[2])
-            elif sys.argv[1] == "upgrade":
-                upgrade(sys.argv[2])
-            elif sys.argv[1] == "update":
+            if action == "install":
+                install(packages_arg)
+            elif action == "remove":
+                remove(packages_arg)
+            elif action == "upgrade":
+                upgrade(packages_arg)
+            elif action == "update":
                 update()
-            elif sys.argv[1] == "enablei386andinstall":
-                enable_i386_install(sys.argv[2])
+            elif action == "enablei386andinstall":
+                enable_i386_install(packages_arg)
         else:
             print("lock error")
             sys.exit(1)

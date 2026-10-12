@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Pars Linux Software Center
+Name[tr]=Pars Linux Yazılım Merkezi
+GenericName=Software Center
+GenericName[tr]=Yazılım Merkezi
+Comment=Install, remove, update applications
+Comment[tr]=Uygulamaları yükleyin, kaldırın, güncelleyin
+Exec=parslinux-software %u
+Icon=parslinux-software
+Terminal=false
+Type=Application
+Categories=GTK;System;PackageManager;
+StartupNotify=true
+Keywords=install;uninstall;package;application;update;upgrade;software;store;flatpak;
+Keywords[tr]=yükle;kaldır;paket;uygulama;güncelleştirme;yükseltme;yazılım;mağaza;flatpak;
+MimeType=x-scheme-handler/parslinux-software-app;

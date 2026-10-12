@@ -9,10 +9,16 @@ Created on Fri Sep 18 14:53:00 2020
 import os
 import subprocess
 
-import apt
+try:
+    import apt
+except ImportError:
+    apt = None
 
 
 def main():
+    if not apt:
+        print("APT is not available on this system.")
+        return
     try:
         cache = apt.Cache()
         cache.open()

@@ -1,0 +1,37 @@
+# Claude & AI Assistant Ignore List for Pars Linux Software Center
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# User Caches & Local Data
+~/.cache/
+~/.config/
+.cache/
+icons/
+*.log
+
+# Git & VCS
+.git/
+.gitignore
+
+# Debian Packaging Artifacts
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/*.substvars
+debian/parslinux-software/
+*.deb
+*.build
+*.buildinfo
+*.changes
+
+# Agent & Brain Internals
+.system_generated/
+scratch/
+.gemini/

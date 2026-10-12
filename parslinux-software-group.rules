@@ -1,0 +1,7 @@
+polkit.addRule(function(action, subject) {
+    if (subject.isInGroup("parslinux-software") || subject.isInGroup("wheel") || subject.isInGroup("sudo")) {
+        if (action.id == "org.parslinux.pkexec.parslinux-software-action") {
+            return polkit.Result.YES;
+        }
+    }
+});
