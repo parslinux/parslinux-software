@@ -8,7 +8,7 @@ Pars Linux projesi, kullanıcıların ve sistemlerinin güvenliğini en üst dü
 
 | Sürüm | Durum | Güvenlik Güncellemeleri |
 | :--- | :--- | :--- |
-| **2.0.x (Pars Linux / Flathub)** | Aktif | ✅ Tam Destek |
+| **2.x (Pars Linux / Flathub)** | Aktif | ✅ Tam Destek |
 | 1.0.x (Legacy) | Emekli | ❌ Desteklenmiyor |
 
 ---

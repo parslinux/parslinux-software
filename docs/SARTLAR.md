@@ -43,5 +43,5 @@ Flatpak teknolojisi uygulamaları sistemden yalıtılmış (sandbox) olarak çal
 ## 6. Ticari Markalar
 
 - "Pars Linux", Pars Linux projesinin tanıtıcı markasıdır.
-- "Pardus", TÜBİTAK ULAKBİM'in tescilli markasıdır.
 - "Flathub" ve "Flatpak", ilgili topluluk ve kuruluşların tescilli veya kullanım haklarına sahip olduğu projelerdir.
+- Belgede adı geçen diğer tüm ticari markalar, tescilli markalar ve ürün adları ilgili hak sahiplerinin mülkiyetindedir.

@@ -43,5 +43,5 @@ While Flatpak provides sandboxing mechanisms to isolate applications from the ho
 ## 6. Trademarks
 
 - "Pars Linux" and its logos are trademarks/identifiers of the Pars Linux project.
-- "Pardus" is a registered trademark of TÜBİTAK ULAKBİM.
 - "Flathub" and "Flatpak" are trademarks and projects of their respective communities and organizations.
+- All other trademarks, registered trademarks, and product names mentioned herein belong to their respective owners.

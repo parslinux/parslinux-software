@@ -7,9 +7,9 @@ This document provides architectural context, commands, and coding standards for
 ## 1. Project Overview & Context
 
 - **Repository:** Pars Linux Software Center (`parslinux-software`)
-- **Origin:** Forked from Pardus Software Center (`pardus-software`).
+- **Architecture:** Fully independent modern software store tailored for Pars Linux and all Linux distributions.
 - **Core Technology:** Python 3, GTK+ 3 (PyGObject), Glade XML UI (`ui/MainWindow.glade`), Flathub REST API v2, Flatpak CLI.
-- **Key Shift:** Completely decoupled from the Debian-only `apps.pardus.org.tr` metadata server. It now uses Flathub as the primary application catalog and Flatpak as the local package management engine, supporting Arch Linux, Pars Linux, and Debian derivatives alike.
+- **Package Management:** Powered entirely by Flathub as the primary universal application catalog and Flatpak as the local package management engine, supporting Arch Linux, Pars Linux, Fedora, and Debian derivatives alike with zero legacy repository dependencies.
 
 ---
 
@@ -82,8 +82,8 @@ python3 -c "import sys; sys.path.insert(0, 'src'); from FlathubClient import Fla
 
 ## 4. Critical Engineering Rules
 
-1. **Never Re-introduce `apps.pardus.org.tr`:**
-   - The upstream Pardus server only contains Debian `.deb` metadata for Pardus 21/23/25. Pars Linux relies on **Flathub**.
+1. **Flathub & Flatpak Architecture Independence:**
+   - The project is 100% independent and relies exclusively on Flathub REST API v2 and the modern Flatpak ecosystem. Never introduce legacy or single-distribution repository endpoints.
 2. **Never Hardcode Debian-Specific Dependencies:**
    - Always wrap `apt`, `apt_pkg`, `distro`, `psutil`, and `netifaces` imports in `try/except ImportError:` with graceful fallbacks.
 3. **Modular Mixin Architecture:**

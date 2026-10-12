@@ -58,7 +58,7 @@ Format, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardını t
 
 ---
 
-## [2.0.0] - 2026-10-12 (Pars Linux Fork & Flathub Entegrasyonu)
+## [2.0.0] - 2026-10-12 (Pars Linux Bağımsız Sürümü & Flathub Entegrasyonu)
 
 ### 🚀 Yeni Özellikler & Modüler Mimari
 - **Modüler Denetleyici Mimarisi (`src/controllers/`):**
@@ -101,7 +101,6 @@ Format, [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardını t
 
 ---
 
-## [1.0.0] - 2021-09-18 (Pardus Orijinal Sürümü)
-- Pardus için geliştirilen ilk GTK+ 3 tabanlı yazılım merkezi sürümü.
-- Debian APT paket arşivi ve `apps.pardus.org.tr` tar.gz metadata sunucu yapısı.
-- Pardus yorum ve oylama sistemi entegrasyonu.
+## [1.0.0] - 2021-09-18 (İlk Temel Sürüm Mirası)
+- İlk GTK+ 3 tabanlı masaüstü yazılım merkezi temel sürümü.
+- Eski yerel paket yönetimi ve ilk uygulama kataloğu yapısı.

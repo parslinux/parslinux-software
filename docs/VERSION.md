@@ -6,8 +6,8 @@ Pars Linux Yazılım Merkezi, [Semantik Sürümleme 2.0.0 (SemVer)](https://semv
 
 ## 1. Güncel Sürüm
 
-- **Sürüm:** `2.0.0`
-- **Kod Adı:** `Flathub Core`
+- **Sürüm:** `2.3.0`
+- **Kod Adı:** `Flathub Core & Multi-Sorting`
 - **Yayın Tarihi:** 12 Ekim 2026
 - **Durum:** Kararlı (Stable)
 
@@ -30,8 +30,8 @@ Pars Linux Yazılım Merkezi, [Semantik Sürümleme 2.0.0 (SemVer)](https://semv
 
 Bir sürüm yayınlanırken aşağıdaki dosyalar eşzamanlı olarak güncellenir:
 
-- `setup.py` (`version='2.0.0'`)
+- `setup.py` (`version='2.3.0'`)
 - `debian/changelog`
 - `docs/CHANGELOG.md`
 - `docs/VERSION.md`
-- Git Etiketi: `git tag -a v2.0.0 -m "Release v2.0.0"`
+- Git Etiketi: `git tag -a v2.3.0 -m "Release v2.3.0"`
