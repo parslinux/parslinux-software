@@ -86,6 +86,7 @@ Tüm teknik, mimari ve kullanıcı rehberleri **[docs/](docs/)** dizini altında
 | **[Çeviri Rehberi (TRANSLATION_GUIDE.md)](docs/TRANSLATION_GUIDE.md)** | Yeni diller ekleme ve gettext kullanımı |
 | **[Katkıda Bulunma (CONTRIBUTING.md)](docs/CONTRIBUTING.md)** | Katkı süreci ve PR kuralları |
 | **[Uygulama Bağlama (UYGULAMA_BAGLAMA.md)](docs/UYGULAMA_BAGLAMA.md)** | Flathub'da uygulama yayınlama ve AppStream hazırlama |
+| **[Flatpak Paketleme Rehberi (FLATPAK_PACKAGING_GUIDE.md)](docs/FLATPAK_PACKAGING_GUIDE.md)** | Araçlar (`flatpak-builder`), depolar ve adım adım paket yapımı |
 | **[Veri Tasarrufu (DATA_SAVING_GUIDE.md)](docs/DATA_SAVING_GUIDE.md)** | 2-tier disk önbelleği, TTL yönetimi ve bant genişliği tasarrufu |
 | **[Güvenlik (SECURITY.md)](docs/SECURITY.md)** | Polkit, Bubblewrap sandbox ve açık bildirim süreci |
 | **[Çatallanma ve Yeniden Yapılandırma (FORK.md)](docs/FORK.md)** | Orijinal proje kökeni, çatallanma gerekçeleri ve mimari dönüşüm |

@@ -22,6 +22,7 @@ Pars Linux Yazılım Merkezi (Pars Linux Software Center) için hazırlanmış k
 | **[ÇEVİRİ REHBERİ (TRANSLATION_GUIDE.md)](TRANSLATION_GUIDE.md)** | Çoklu dil desteği, `.po`/`.pot` gettext dosyalarının güncellenmesi |
 | **[KATKIDA BULUNMA (CONTRIBUTING.md)](CONTRIBUTING.md)** | Katkı sağlama ilkeleri, Pull Request ve kod standartları |
 | **[UYGULAMA BAĞLAMA VE YAYINLAMA (UYGULAMA_BAGLAMA.md)](UYGULAMA_BAGLAMA.md)** | Flathub veya Pars Linux deposuna uygulama ekleme ve paketleme rehberi |
+| **[FLATPAK PAKETLEME REHBERİ (FLATPAK_PACKAGING_GUIDE.md)](FLATPAK_PACKAGING_GUIDE.md)** | Araçlar (`flatpak-builder`), depolar ve adım adım paket yapımı |
 | **[VERİ VE ÖNBELLEK REHBERİ (DATA_SAVING_GUIDE.md)](DATA_SAVING_GUIDE.md)** | Çift katmanlı disk TTL önbelleği, 250ms debouncing ve bant genişliği optimizasyonu |
 | **[GÜVENLİK POLİTİKASI (SECURITY.md)](SECURITY.md)** | Polkit izinleri, Flatpak sandbox güvenliği ve açık bildirim süreci |
 | **[ÇATALLANMA VE YENİDEN YAPILANDIRMA (FORK.md)](FORK.md)** | Orijinal proje kökeni, çatallanma gerekçeleri ve mimari dönüşüm |
